@@ -1,0 +1,42 @@
+@extends('layouts.auth')
+
+@section('title', 'Iniciar sesión')
+@section('subtitle', 'Ingrese su correo electrónico y su contraseña para continuar.')
+
+@section('content')
+    <div class="p-2 mt-4">
+        <form method="POST" action="{{ route('login') }}" class="form-horizontal" >
+            @csrf
+            <div class="form-group auth-form-group-custom mb-4">
+                <i class="ri-user-2-line auti-custom-input-icon"></i>
+                <label for="email">Correo electrónico</label>
+                <input type="email" id="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="Ingresa tu correo electrónico" autocomplete="email" autofocus>
+                @error('email')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
+            </div>
+            <div class="form-group auth-form-group-custom mb-4">
+                <i class="ri-lock-2-line auti-custom-input-icon"></i>
+                <label for="password">Contraseña</label>
+                <input type="password" id="password" name="password" class="form-control @error('password') is-invalid @enderror" placeholder="Ingresa tu contraseña">
+                @error('password')
+                    <span class="invalid-feedback" role="alert">
+                        <strong>{{ $message }}</strong>
+                    </span>
+                @enderror
+            </div>
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" id="remember" name="remember" class="custom-control-input" {{ old('remember') ? 'checked' : '' }}>
+                <label class="custom-control-label" for="remember">Recordar contraseña</label>
+            </div>
+            <div class="mt-4 text-center">
+                <button class="btn btn-primary w-md waves-effect waves-light" type="submit">Continuar</button>
+            </div>
+            <div class="mt-4 text-center">
+                <a href="{{ route('password.request') }}" class="text-muted">¿Olvidaste tu contraseña?</a>
+            </div>
+        </form>
+    </div>
+@endsection
