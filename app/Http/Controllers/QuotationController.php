@@ -112,24 +112,12 @@ class QuotationController extends Controller
         // Busco el vendedor web con menos oportunidades creadas, que pertenezca a la misma provincia del prospecto
         $sellers = User::select('id', 'group_id', 'name', 'last_name', 'email', 'assigned_prospects')
             ->whereRoleId(Role::ONLINE_SELLER)
-            ->whereProvinceId($request->province_id)
+            ->whereGroupId(Group::GRUPO_CANAL_DIGITAL)
             ->whereActive(true)
             ->with('group')
             ->inRandomOrder()
             ->get();
         $seller = $sellers->sortBy('assigned_prospects')->first();
-
-        // No encuentro vendedor en la provincia del prospecto
-        if (! $seller) {
-            // Busco el vendedor web con menos oportunidades creadas, sin importar la provincia
-            $sellers = User::select('id', 'group_id', 'name', 'last_name', 'email', 'assigned_prospects')
-                ->whereRoleId(Role::ONLINE_SELLER)
-                ->whereActive(true)
-                ->with('group')
-                ->inRandomOrder()
-                ->get();
-            $seller = $sellers->sortBy('assigned_prospects')->first();
-        }
 
         // Actualizo el prospecto
         $customer->locked = true;

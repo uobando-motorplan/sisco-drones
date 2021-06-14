@@ -9,5 +9,5 @@ class Channel extends Model
 {
     use SoftDeletes;
 
-    const DRONES = 6;
+    const DRONES = 7;
 }

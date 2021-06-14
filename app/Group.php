@@ -9,6 +9,8 @@ class Group extends Model
 {
     use SoftDeletes;
 
+    const GRUPO_CANAL_DIGITAL = 6;
+
     /**
      *
      * Relación uno a muchos (Inversa)

@@ -2,27 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Channel;
-use App\ContactMethod;
-use App\Customer;
-use App\Http\Requests\CustomerRequest;
-use App\Media;
-use App\Notifications\NewReferredNotification;
-use App\Occupation;
-use App\OccupationPeriod;
-use App\Product;
-use App\Province;
-use App\Quotation;
 use App\Role;
-use App\Rules\ValidarCedula;
-use App\Rules\ValidarDigitosIdentificacion;
-use App\Rules\ValidarRuc;
+use App\User;
+use App\Group;
+use App\Media;
 use App\Score;
 use App\Source;
 use App\Status;
-use App\User;
+use App\Channel;
+use App\Product;
+use App\Customer;
+use App\Province;
+use App\Quotation;
+use App\Occupation;
+use App\ContactMethod;
+use App\OccupationPeriod;
+use App\Rules\ValidarRuc;
+use App\Rules\ValidarCedula;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use App\Http\Requests\CustomerRequest;
+use App\Rules\ValidarDigitosIdentificacion;
+use App\Notifications\NewReferredNotification;
 
 class CustomerController extends Controller
 {
@@ -137,24 +138,12 @@ class CustomerController extends Controller
         // Busco el vendedor web con menos oportunidades creadas, que pertenezca a la misma provincia del prospecto
         $sellers = User::select('id', 'group_id', 'name', 'last_name', 'email', 'assigned_prospects')
             ->whereRoleId(Role::ONLINE_SELLER)
-            ->whereProvinceId($request->province_id)
+            ->whereGroupId(Group::GRUPO_CANAL_DIGITAL)
             ->whereActive(true)
             ->with('group')
             ->inRandomOrder()
             ->get();
         $seller = $sellers->sortBy('assigned_prospects')->first();
-
-        // No encuentro vendedor en la provincia del prospecto
-        if (! $seller) {
-            // Busco el vendedor web con menos oportunidades creadas, sin importar la provincia
-            $sellers = User::select('id', 'group_id', 'name', 'last_name', 'email', 'assigned_prospects')
-                ->whereRoleId(Role::ONLINE_SELLER)
-                ->whereActive(true)
-                ->with('group')
-                ->inRandomOrder()
-                ->get();
-            $seller = $sellers->sortBy('assigned_prospects')->first();
-        }
 
         // Busco la fuente de información
         $source = Source::whereChannelId(Channel::DRONES)->first();
