@@ -38,43 +38,36 @@
         </ul>
     </div>
     <div class="features">
-        <ul>
-            @if ($item->feature_1)
-                <li>{{ $item->feature_1 }}</li>
-            @endif
-            @if ($item->feature_2)
-                <li>{{ $item->feature_2 }}</li>
-            @endif
-            @if ($item->feature_3)
-                <li>{{ $item->feature_3 }}</li>
-            @endif
-            @if ($item->feature_4)
-                <li>{{ $item->feature_4 }}</li>
-            @endif
-            @if ($item->feature_5)
-                <li>{{ $item->feature_5 }}</li>
-            @endif
-            @if ($item->feature_6)
-                <li>{{ $item->feature_6 }}</li>
-            @endif
-            @if ($item->feature_7)
-                <li>{{ $item->feature_7 }}</li>
-            @endif
-            @if ($item->feature_8)
-                <li>{{ $item->feature_8 }}</li>
-            @endif
-            @if ($item->feature_9)
-                <li>{{ $item->feature_9 }}</li>
-            @endif
-        </ul>
+        @if ($item->feature_1)
+            <span>&#8226</span> {{ $item->feature_1 }} 
+        @endif
+        @if ($item->feature_2)
+            <span>&#8226</span> {{ $item->feature_2 }} 
+        @endif
+        @if ($item->feature_3)
+            <span>&#8226</span> {{ $item->feature_3 }} 
+        @endif
+        @if ($item->feature_4)
+            <span>&#8226</span> {{ $item->feature_4 }} 
+        @endif
+        @if ($item->feature_5)
+            <span>&#8226</span> {{ $item->feature_5 }} 
+        @endif
+        @if ($item->feature_6)
+            <span>&#8226</span> {{ $item->feature_6 }} 
+        @endif
+        @if ($item->feature_7)
+            <span>&#8226</span> {{ $item->feature_7 }} 
+        @endif
+        @if ($item->feature_8)
+            <span>&#8226</span> {{ $item->feature_8 }} 
+        @endif
+        @if ($item->feature_9)
+            <span>&#8226</span> {{ $item->feature_9 }} 
+        @endif
     </div>
     @if ($item->real_estate_project_id)
-        <hr>
-        {{-- <div class="p-2">
-            <span class="mdi mdi-city icon"></span>{{ $item->real_estate_project->location->name }}<br>
-            <span class="mdi mdi-map-marker icon"></span> {{ $item->real_estate_project->address }}
-        </div> --}}
-        <div class="p-2">
+        <div class="address">
             {{ $item->real_estate_project->address }}
         </div>
     @endif

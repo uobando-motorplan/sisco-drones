@@ -81,4 +81,3 @@
 
     @include('brochures.partials.create_modal')
 @endsection
-

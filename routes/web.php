@@ -75,7 +75,6 @@ Route::get('items/{product}/search', 'ItemController@search')->name('items.searc
 Route::get('items/{item}/gallery', 'ItemController@gallery')->name('items.gallery');
 // Brochures
 Route::post('brochures/{brochure}/notify', 'BrochureController@notify')->name('brochures.notify');
-Route::get('brochures/{slug}', 'BrochureController@show')->name('brochures.show');
 Route::get('brochures/{slug}/pdf', 'BrochureController@pdf')->name('brochures.pdf');
 Route::get('brochures/{product}/create', 'BrochureController@create')->name('brochures.create');
 Route::post('brochures/{product}/store', 'BrochureController@store')->name('brochures.store');

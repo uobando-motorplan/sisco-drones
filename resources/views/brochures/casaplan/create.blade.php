@@ -124,15 +124,3 @@
 
     @include('brochures.partials.create_modal')
 @endsection
-
-{{-- @push('js')
-    <script src="{{ asset('assets/js/pages/brochures.js') }}"></script>
-    @if ($errors->any())
-        <script>
-            $('#createModal').modal('show');
-            jQuery(function() {
-                $('#new_referred').trigger('change');
-            });
-        </script>
-    @endif
-@endpush --}}

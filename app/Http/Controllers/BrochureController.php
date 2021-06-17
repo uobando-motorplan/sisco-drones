@@ -276,68 +276,6 @@ class BrochureController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  String $slug
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Request $request, $slug)
-    {
-        $brochure = Brochure::where('slug', $slug)->firstorfail();
-
-         // Obtengo los artículos del brochure
-        $items = Item::whereIn('id', $brochure->details->pluck('item_id'))
-            ->with(['category', 'preference', 'real_estate_project'])
-            ->orderBy('price')
-            ->get();
-
-        // Obtengo los planes de los artículos del brochure
-        $plans = Plan::select('id', 'product_id', 'amount', 'monthly_payment')
-            ->whereIn('id', $items->pluck('plan_id'))
-            ->orderBy('amount')
-            ->get();
-
-        if ($brochure->quotation->plan->product_id == Product::MOTORPLAN) {
-            if ($request->pdf == 1) {
-                $pdf = PDF::loadView('brochures.motorplan.pdf', compact('brochure', 'items', 'plans'))
-                    ->setPaper('a4');
-                return $pdf->stream('brochure-motorplan-'.date('Ymdhis').'.pdf');
-                return $pdf->download('brochure-motorplan.pdf');
-            }
-
-            return view('brochures.motorplan.show', compact('brochure', 'items', 'plans'));
-        } else {
-            // Items con planes combinados
-            if ($items->where('plan_id', 999999)->count()) {
-                // Obtengo todos los planes de CasaPlan
-                $all_plans = Plan::select('id', 'product_id', 'amount', 'monthly_payment')
-                    ->whereProductId(Product::CASAPLAN)
-                    ->whereActive(true)
-                    ->get();
-
-                $last_plan = $all_plans->last();
-
-                $combined_plan_items = collect();
-
-                // Agrego los planes combinados
-                foreach ($items->where('plan_id', 999999) as $item) {
-                    $combined_plan_items->push((object)[
-                        'item' => $item,
-                        'combined_plans' => $this->combine_plans($item->price, $all_plans),
-                    ]);
-                }
-            } else {
-                $combined_plan_items = null;
-                $last_plan = null;
-                $all_plans = null;
-            }
-
-            return view('brochures.casaplan.show', compact('brochure', 'items', 'plans', 'all_plans', 'last_plan', 'combined_plan_items'));
-        }
-    }
-
-    /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Brochure  $brochure
