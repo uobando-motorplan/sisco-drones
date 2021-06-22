@@ -25,21 +25,23 @@ class BrochureRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'new_referred' => 'required|boolean',
-            'quotation_id' => 'nullable|exists:quotations,id',
-
-            'city_id' => 'nullable|exists:cities,id',
-            'identification_type' => ['nullable', Rule::in([Customer::CEDULA, Customer::RUC, Customer::PASAPORTE])],
-            'identification'=>'nullable|max:20|unique:customers,identification,NULL,id,deleted_at,NULL',
-            'names' => 'nullable|max:50',
-            'surnames' => 'nullable|max:50',
-            'cell_number' => 'nullable|digits:10',
-            'email' => 'nullable|max:150|email',
-
-            'plan_id' => 'nullable|exists:plans,id',
-            'preference_id' => 'nullable|exists:preferences,id',
-        ];
+        if ($this->new_referred == 1) {
+            return [
+                'names' => 'required|max:50',
+                'surnames' => 'required|max:50',
+                'identification_type' => ['required', Rule::in([Customer::CEDULA, Customer::RUC, Customer::PASAPORTE])],
+                'identification'=>'required|max:15|unique:customers,identification,NULL,id,deleted_at,NULL',
+                'city_id' => 'required|exists:cities,id',
+                'email' => 'required|max:150|email',
+                'cell_number' => 'required|digits:10',
+                'plan_id' => 'required|exists:plans,id',
+                'preference_id' => 'required|exists:preferences,id',
+            ];
+        } else {
+            return [
+                'quotation_id' => 'required|exists:quotations,id',
+            ];
+        }
     }
 
     /**
@@ -50,19 +52,17 @@ class BrochureRequest extends FormRequest
     public function attributes()
     {
         return [
-            'new_referred' => 'enviar a',
-            'quotation_id' => 'referido',
-
-            'city_id' => 'ciudad',
-            'identification_type' => 'tipo de documento',
-            'identification' => 'número de documento',
             'names' => 'nombres',
             'surnames' => 'apellidos',
-            'cell_number' => 'teléfono móvil',
+            'identification_type' => 'tipo de documento',
+            'identification' => 'número de documento',
+            'city_id' => 'ciudad',
             'email' => 'correo electrónico',
-
+            'cell_number' => 'teléfono móvil',
             'plan_id' => 'plan',
             'preference_id' => 'preferencia',
+
+            'quotation_id' => 'referido',
         ];
     }
 

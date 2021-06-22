@@ -88,7 +88,7 @@ class BrochureController extends Controller
             ->whereHas('plan', function ($query) use ($product) {
                 $query->where('product_id', $product->id);
             })
-            ->with('customer:id,names,surnames,identification')
+            ->with(['customer:id,names,surnames,identification', 'plan:id,amount'])
             ->get();
 
         // Obtengo los artículos agregados al brochure
@@ -152,7 +152,7 @@ class BrochureController extends Controller
         }
 
         // Es un nuevo prospecto
-        if ($request->new_referred) {
+        if ($request->new_referred == 1) {
             // Valido la cédula
             if ($request->identification_type == Customer::CEDULA) {
                 $this->validate($request, [
@@ -170,7 +170,7 @@ class BrochureController extends Controller
                 $this->validate($request, ['identification' => new ValidarDigitosIdentificacion]);
             }
 
-            // Conssulto la ciudad
+            // Consulto la ciudad
             $city = City::select('id', 'province_id')
                 ->whereId($request->city_id)
                 ->first();
@@ -218,12 +218,12 @@ class BrochureController extends Controller
             $quotation = (new Quotation)->fill($request->all());
             $quotation->customer_id = $customer->id;
             $quotation->drone_id = auth()->user()->id;
-            $quotation->source_id = $customer->source_id;
+            $quotation->source_id = $source->id;
             $quotation->status_id = Status::POR_GESTIONAR;
             $quotation->score_id = Score::CLIENTE_INDECISO;
-            $quotation->seller_id = $customer->seller->id;
-            $quotation->group_id = $customer->seller->group_id;
-            $quotation->supervisor_id = $customer->seller->group->supervisor_id;
+            $quotation->seller_id = $seller->id;
+            $quotation->group_id = $seller->group_id;
+            $quotation->supervisor_id = $seller->group->supervisor_id;
             $quotation->created_from = Quotation::DRONES_WEB;
             $quotation->condition = Quotation::NUEVO;
             $quotation->save();
@@ -263,16 +263,22 @@ class BrochureController extends Controller
             ]);
         }
 
-        // Envio un correo electrónico al prospecto
-        Mail::to($brochure->quotation->customer->email)->send(new BrochureMail($brochure));
-
         // Destruyo la sesión del brochure
         session()->forget('items');
         session()->forget('product');
 
-        return redirect()
-            ->route('quotations.show', $quotation_id)
-            ->with('success-brochure', 'El referido fue creado correctamente. El brochure fue enviado correctamente.');
+        try {
+            // Envio un correo electrónico al prospecto
+            Mail::to($brochure->quotation->customer->email)->send(new BrochureMail($brochure));
+
+            return redirect()
+                ->route('quotations.show', $quotation_id)
+                ->with('success-brochure', 'El referido fue creado correctamente. El brochure fue enviado correctamente.');
+        } catch (\Throwable $th) {
+            return redirect()
+                ->route('quotations.show', $quotation_id)
+                ->with('warning-brochure', 'El catálogo fue creado correctamente pero el referido no fue notificado porque su cuenta de correo electrónico es inválida. Por favor corrija la cuenta de correo electrónico y utilice el botón "Reenviar email".');
+        }
     }
 
     /**

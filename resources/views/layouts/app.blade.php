@@ -277,7 +277,7 @@ function activeMenu($url) {
     <!-- Ion Range Slider Js -->
     <script src="{{ asset('assets/libs/ion-rangeslider/js/ion.rangeSlider.min.js') }}"></script>
     <!-- scripts js -->
-    <script src="{{ asset('assets/js/scripts.js') }}"></script>
+    <script src="{{ asset('assets/js/scripts.js') }}?{{ rand() }}"></script>
     @stack('js')
 
 </body>
