@@ -152,7 +152,7 @@ class CustomerController extends Controller
         $customer = (new Customer)->fill($request->all());
         $customer->drone_id = auth()->user()->id;
         $customer->seller_id = $seller->id;
-        $customer->assignator_id = User::SYSTEM;
+        $customer->assignator_id = User::SISTEMA;
         $customer->source_id = $source->id;
         $customer->media_id = Media::REFERIDO;
         $customer->status = Customer::COMPLETO;

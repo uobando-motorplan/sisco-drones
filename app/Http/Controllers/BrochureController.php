@@ -204,7 +204,7 @@ class BrochureController extends Controller
             $customer = (new Customer)->fill($request->all());
             $customer->drone_id = auth()->user()->id;
             $customer->seller_id = $seller->id;
-            $customer->assignator_id = User::SYSTEM;
+            $customer->assignator_id = User::SISTEMA;
             $customer->source_id = $source->id;
             $customer->contact_method_id = ContactMethod::VISITA_ASESOR_COMERCIAL;
             $customer->contact_schedule_id = ContactSchedule::POR_LA_NOCHE;

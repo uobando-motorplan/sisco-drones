@@ -305,7 +305,7 @@
                                             <td>{{ $brochure->details_count }}</td>
                                             <td>{{ $brochure->created_at }}</td>
                                             <td>
-                                                <a href="{{ env('SISCO_URL') }}brochures/{{ $brochure->slug }}" class="btn btn-sm btn-outline-secondary mr-1" title="Consultar registro" target="_blank"><i class="ri-eye-line"></i></a><a href="javascript:void(0);" class="btn btn-sm btn-outline-info" title="Reenviar email" data-toggle="modal" data-target="#notifyModal" data-url="{{ route('brochures.notify', $brochure->id) }}"><i class="ri-mail-line"></i></a>
+                                                <a href="{{ env('SISCO_URL') }}brochures/{{ $brochure->slug }}" class="btn btn-sm btn-outline-secondary mr-1" title="Ver catálogo" target="_blank"><i class="ri-eye-line"></i></a><a href="javascript:void(0);" class="btn btn-sm btn-outline-info" title="Reenviar catálogo" data-toggle="modal" data-target="#notifyModal" data-url="{{ route('brochures.notify', $brochure->id) }}"><i class="ri-mail-line"></i></a>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -366,7 +366,7 @@
                         </button>
                     </div>
                     <div class="modal-body">
-                        ¿Está seguro de reenviar el correo electrónico del catálogo personalizado a tu referido?
+                        ¿Estás seguro de reenviar el catálogo personalizado a tu referido?
                     </div>
                     <div class="modal-footer">
                         <form action="" method="post">

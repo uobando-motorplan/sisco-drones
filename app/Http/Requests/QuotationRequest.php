@@ -34,7 +34,7 @@ class QuotationRequest extends FormRequest
                 'occupation_id' => 'nullable|exists:occupations,id',
                 'occupation_period_id' => 'nullable|exists:occupation_periods,id',
                 'identification_type' => ['required', Rule::in([Customer::CEDULA, Customer::RUC, Customer::PASAPORTE])],
-                'identification' => 'required|max:20|unique:customers,identification,NULL,id,deleted_at,NULL',
+                'identification' => 'required|max:20|unique:customers,identification,'.$this->customer->id.',id,deleted_at,NULL',
                 'names' => 'required|max:50',
                 'surnames' => 'required|max:50',
                 'phone_number' => 'nullable|required_without:cell_number|digits:9',

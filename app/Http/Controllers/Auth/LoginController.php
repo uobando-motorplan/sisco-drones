@@ -2,11 +2,15 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
-use App\Providers\RouteServiceProvider;
 use App\Role;
-use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use App\User;
+use App\DroneSuspensionReason;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Providers\RouteServiceProvider;
+use Illuminate\Validation\ValidationException;
+use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
 {
@@ -42,26 +46,24 @@ class LoginController extends Controller
 
     /**
      *
-     * Verifico si el usuario está activo
+     * Sobreescribo este método para verificar si el usuario está activo.
      *
-     */
-    protected function credentials(Request $request) 
-    {
-        return ['email' => $request->{$this->username()}, 'password' => $request->password, 'role_id' => Role::DRONE, 'active' => true]; 
-    }
-
-    /**
-     * The user has been authenticated.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  mixed  $user
-     * @return mixed
      */
     protected function authenticated(Request $request, $user)
     {
-        // Redirecciono a la página de cambiar la clave temporal cuando inicia sesión por primera vez
-        // if ($user->created_at == $user->updated_at) {
-        //     return redirect()->route('users.replace_temporary_password');
-        // }
+        if (!$user->active) {
+            Auth::logout();
+
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            if (in_array($user->drone_suspension_reason_id, [DroneSuspensionReason::PROCESO_INCONCLUSO, DroneSuspensionReason::SOLICITUD_USUARIO])) {
+                return redirect()->route('reactivate_account.index');
+            } else {
+                return redirect()->back()->with('warning', 'Estas credenciales no coinciden con nuestros registros.');
+            }
+
+            return redirect()->back()->with('warning', $message);
+        }
     }
 }

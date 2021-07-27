@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PhotoRequest extends FormRequest
+class DeactivateAccountRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,7 +24,8 @@ class PhotoRequest extends FormRequest
     public function rules()
     {
         return [
-            'image' => 'required|mimes:jpeg,png|max:1000',
+            'drone_deactivation_reason_id' => 'required|exists:drone_deactivation_reasons,id',
+            'comment' => 'nullable|max:255',
         ];
     }
 
@@ -36,7 +37,8 @@ class PhotoRequest extends FormRequest
     public function attributes()
     {
         return [
-            'image' => 'archivo',
+            'drone_deactivation_reason_id' => 'razón de cancelación',
+            'comment' => 'comentario',
         ];
     }
 }

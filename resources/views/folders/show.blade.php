@@ -23,7 +23,7 @@
     <div class="d-flex flex-wrap">
         @foreach ($folder->files->sortBy('name') as $file)
             <div class="resource text-center mb-3 mr-3">
-                <a href="{{ env('SISCO_URL') }}storage/biblioteca/{{ $file->name }}" target="_blank"><img src="{{ asset('assets/images/archivo.png') }}" class="mb-2"></a><br>
+                <a href="{{ \Storage::disk('s3')->url('resources/'.$file->name) }}" target="_blank"><img src="{{ asset('assets/images/archivo.png') }}" class="mb-2"></a><br>
                 {{ $file->name }}
             </div>
         @endforeach

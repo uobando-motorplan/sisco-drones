@@ -151,7 +151,9 @@ function activeMenu($url) {
                             <span class="d-none d-xl-inline-block ml-1">{{ auth()->user()->name }}</span> <i class="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="{{ route('users.profile') }}"><i class="ri-user-line mr-1"></i> Perfil</a>
+                            <a class="dropdown-item" href="{{ route('users.profile') }}"><i class="ri-user-line mr-1"></i> Mi perfil</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{{ route('users.documents') }}"><i class="ri-folder-line mr-1"></i> Mi documentación</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="javascript:void(0);" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="ri-shut-down-line mr-1"></i> Cerrar sesión</a>
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
@@ -206,13 +208,13 @@ function activeMenu($url) {
                         </li>
                         <li>
                             <a href="{{ route('folders.index') }}" class="waves-effect{{ activeMenu('resources*') }}">
-                                <i class="ri-folders-line"></i>
+                                <i class="ri-book-2-line"></i>
                                 <span>Librería</span>
                             </a>
                         </li>
                         <li class="{{ activeMenu('items*') }}{{ activeMenu('brochures*') }}">
                             <a href="javascript:void(0);" class="has-arrow waves-effect{{ activeMenu('items*') }}{{ activeMenu('brochures*') }}">
-                                <i class="ri-book-2-line"></i>
+                                <i class="ri-booklet-line"></i>
                                 <span>Mi catálogo</span>
                             </a>
                             <ul class="sub-menu" aria-expanded="false">

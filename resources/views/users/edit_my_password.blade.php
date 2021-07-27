@@ -53,7 +53,7 @@
                             {!! $errors->first('password_confirmation', '<span class="form-text form-error">:message</span>') !!}
                         </div>
                         <div class="mt-1">
-	                        <button class="btn btn-secondary waves-effect waves-light mr-1" type="submit">Aceptar</button>
+                            <button class="btn btn-secondary waves-effect waves-light mr-1" type="submit">Aceptar</button>
                         </div>
                     </form>
                 </div>

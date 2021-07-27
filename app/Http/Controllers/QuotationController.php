@@ -6,6 +6,7 @@ use App\City;
 use App\Plan;
 use App\Role;
 use App\User;
+use App\Group;
 use App\Media;
 use App\Score;
 use App\Source;

@@ -45,7 +45,7 @@
                                     <div>
                                         <div class="text-center">
                                             <div>
-                                                <a href="javascript:void(0);" class="logo"><img src="{{ asset('assets/images/logo.png') }}" height="" alt="logo"></a>
+                                                <a href="{{ route('login') }}" class="logo"><img src="{{ asset('assets/images/logo.png') }}" height="" alt="logo"></a>
                                             </div>
                                             <h4 class="font-size-18 letter-spacing-sm mt-5 text-uppercase">@yield('title')</h4>
                                             <p class="text-muted">@yield('subtitle')</p>
@@ -75,7 +75,18 @@
     <script src="{{ asset('assets/libs/metismenu/metisMenu.min.js') }}"></script>
     <script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
     <script src="{{ asset('assets/libs/node-waves/waves.min.js') }}"></script>
+    <script src="{{ asset('assets/libs/form-validator/jquery.form-validator.min.js') }}"></script>
     <script src="{{ asset('assets/js/app.js') }}"></script>
+    <script>
+    $.validate({
+        modules: 'security, sanitize',
+        lang: 'es',
+        onSuccess: function($form) {
+            $('.btn').prop('disabled', true);
+            $('form').css('opacity', '.5');
+        }
+    });
+    </script>
 </body>
 
 </html>

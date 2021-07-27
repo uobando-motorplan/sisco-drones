@@ -11,7 +11,8 @@ use Illuminate\Support\Carbon;
 use Yajra\DataTables\DataTables;
 
 class NotificationController extends Controller
-{    /**
+{
+    /**
      *
      * Class Constructor 
      *

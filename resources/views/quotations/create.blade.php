@@ -129,14 +129,14 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="cell_number">Teléfono móvil</label> <small class="text-muted">(Ejemplo: 0985462885)</small>
-                                            <input type="text" name="cell_number" id="cell_number" class="form-control{{ $errors->has('cell_number') ? ' is-invalid' : '' }}" value="{{ $customer->cell_number }}" maxlength="10" placeholder="10 dígitos" data-validation="number" data-validation-optional="true" data-sanitize="trim">
+                                            <input type="text" name="cell_number" id="cell_number" class="form-control mobile_phone{{ $errors->has('cell_number') ? ' is-invalid' : '' }}" value="{{ $customer->cell_number }}" maxlength="10" placeholder="10 dígitos" data-validation="number" data-validation-optional="true" data-sanitize="trim">
                                             {!! $errors->first('cell_number', '<span class="form-text form-error">:message</span>') !!}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="phone_number">Teléfono fijo</label> <small class="text-muted">(Ejemplo: 042879215)</small>
-                                            <input type="text" name="phone_number" id="phone_number" class="form-control{{ $errors->has('phone_number') ? ' is-invalid' : '' }}" value="{{ $customer->phone_number }}" maxlength="9" placeholder="9 dígitos" data-validation="number" data-validation-optional="true" data-sanitize="trim">
+                                            <input type="text" name="phone_number" id="phone_number" class="form-control landline_phone{{ $errors->has('phone_number') ? ' is-invalid' : '' }}" value="{{ $customer->phone_number }}" maxlength="9" placeholder="9 dígitos" data-validation="number" data-validation-optional="true" data-sanitize="trim">
                                             {!! $errors->first('phone_number', '<span class="form-text form-error">:message</span>') !!}
                                         </div>
                                     </div>
@@ -181,7 +181,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="plan_id">Plan *</label>
-                                            <select name="plan_id" id="plan_id" class="custom-select{{ $errors->has('plan_id') ? ' is-invalid' : '' }}" data-validation="required">
+                                            <select name="plan_id" id="plan_id" class="custom-select{{ $errors->has('plan_id') ? ' is-invalid' : '' }}" data-validation="required" data-value="{{ old('plan_id') }}">
                                                 <option value="">- Seleccione un item -</option>
                                             </select>
                                             {!! $errors->first('plan_id', '<span class="form-text form-error">:message</span>') !!}
@@ -192,7 +192,7 @@
                                     <div class="col-md">
                                         <div class="form-group">
                                             <label for="preference_id">Preferencia *</label>
-                                            <select name="preference_id" id="preference_id" class="custom-select{{ $errors->has('preference_id') ? ' is-invalid' : '' }}" data-validation="required">
+                                            <select name="preference_id" id="preference_id" class="custom-select{{ $errors->has('preference_id') ? ' is-invalid' : '' }}" data-validation="required" data-value="{{ old('preference_id') }}">
                                                 <option value="">- Seleccione un item -</option>
                                             </select>
                                             {!! $errors->first('preference_id', '<span class="form-text form-error">:message</span>') !!}
@@ -248,13 +248,12 @@
                                 </div>
                             </div>
 
-
                             <div class="tab-pane" id="questions-tab" role="tabpanel">
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="occupation_id">Ocupación *</label>
-                                            <select name="occupation_id" id="occupation_id" class="custom-select{{ $errors->has('occupation_id') ? ' is-invalid' : '' }}" data-validation="required">
+                                            <label for="occupation_id">Ocupación</label>
+                                            <select name="occupation_id" id="occupation_id" class="custom-select{{ $errors->has('occupation_id') ? ' is-invalid' : '' }}" data-validation="">
                                                 <option value="">- Seleccione un item -</option>
                                                 @foreach ($occupations as $id => $name)
                                                     <option value="{{ $id }}" {{ $customer->occupation_id == $id ? 'selected' : '' }}>{{ $name }}</option>
@@ -265,8 +264,8 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="occupation_period_id">Periodo *</label>
-                                            <select name="occupation_period_id" id="occupation_period_id" class="custom-select{{ $errors->has('occupation_period_id') ? ' is-invalid' : '' }}" data-validation="required">
+                                            <label for="occupation_period_id">Periodo</label>
+                                            <select name="occupation_period_id" id="occupation_period_id" class="custom-select{{ $errors->has('occupation_period_id') ? ' is-invalid' : '' }}" data-validation="">
                                                 <option value="">- Seleccione un item -</option>
                                                 @foreach ($occupation_periods as $id => $name)
                                                     <option value="{{ $id }}" {{ $customer->occupation_period_id == $id ? 'selected' : '' }}>{{ $name }}</option>
@@ -279,8 +278,8 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="has_social_security">¿Está afiliado al IESS? *</label>
-                                            <select name="has_social_security" id="has_social_security" class="custom-select{{ $errors->has('has_social_security') ? ' is-invalid' : '' }}" data-validation="required">
+                                            <label for="has_social_security">¿Está afiliado al IESS?</label>
+                                            <select name="has_social_security" id="has_social_security" class="custom-select{{ $errors->has('has_social_security') ? ' is-invalid' : '' }}" data-validation="">
                                                 <option value="">- Seleccione un item -</option>
                                                 <option value="S" {{ $customer->has_social_security == 'S' ? 'selected' : '' }}>Sí</option>
                                                 <option value="N" {{ $customer->has_social_security == 'N' ? 'selected' : '' }}>No</option>
@@ -290,8 +289,8 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="can_pay_down_payment">¿Tiene dinero para una entrada? *</label>
-                                            <select name="can_pay_down_payment" id="can_pay_down_payment" class="custom-select{{ $errors->has('can_pay_down_payment') ? ' is-invalid' : '' }}" data-validation="required">
+                                            <label for="can_pay_down_payment">¿Tiene dinero para una entrada?</label>
+                                            <select name="can_pay_down_payment" id="can_pay_down_payment" class="custom-select{{ $errors->has('can_pay_down_payment') ? ' is-invalid' : '' }}" data-validation="">
                                                 <option value="">- Seleccione un item -</option>
                                                 <option value="S" {{ $customer->can_pay_down_payment == 'S' ? 'selected' : '' }}>Sí</option>
                                                 <option value="N" {{ $customer->can_pay_down_payment == 'N' ? 'selected' : '' }}>No</option>
@@ -303,15 +302,15 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="monthly_payment_capacity">¿Cuánto puede pagar mensualmente? *</label>
-                                            <input type="number" name="monthly_payment_capacity" id="monthly_payment_capacity" class="form-control{{ $errors->has('monthly_payment_capacity') ? ' is-invalid' : '' }}" value="{{ $customer->monthly_payment_capacity }}" maxlength="10" placeholder="Cantidad en USD" data-validation="required number" data-sanitize="trim">
+                                            <label for="monthly_payment_capacity">¿Cuánto puede pagar mensualmente?</label>
+                                            <input type="number" name="monthly_payment_capacity" id="monthly_payment_capacity" class="form-control{{ $errors->has('monthly_payment_capacity') ? ' is-invalid' : '' }}" value="{{ $customer->monthly_payment_capacity }}" maxlength="10" placeholder="Cantidad en USD" data-validation="number" data-validation-optional="true" data-sanitize="trim">
                                             {!! $errors->first('monthly_payment_capacity', '<span class="form-text form-error">:message</span>') !!}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="has_applied_to_credit">¿Aplicó a un tipo de crédito? *</label>
-                                            <select name="has_applied_to_credit" id="has_applied_to_credit" class="custom-select{{ $errors->has('has_applied_to_credit') ? ' is-invalid' : '' }}" data-validation="required">
+                                            <label for="has_applied_to_credit">¿Aplicó a un tipo de crédito?</label>
+                                            <select name="has_applied_to_credit" id="has_applied_to_credit" class="custom-select{{ $errors->has('has_applied_to_credit') ? ' is-invalid' : '' }}" data-validation="">
                                                 <option value="">- Seleccione un item -</option>
                                                 <option value="S" {{ $customer->has_applied_to_credit == 'S' ? 'selected' : '' }}>Sí</option>
                                                 <option value="N" {{ $customer->has_applied_to_credit == 'N' ? 'selected' : '' }}>No</option>
@@ -321,8 +320,8 @@
                                     </div>
                                     <div class="col-12{{ $customer->has_applied_to_credit == 'S' ? '' : ' d-none' }}">
                                         <div class="form-group">
-                                            <label for="why_didnt_buy">¿Por qué no compró por ahí? *</label>
-                                            <input type="text" name="why_didnt_buy" id="why_didnt_buy" class="form-control{{ $errors->has('active') ? ' is-invalid' : '' }}" maxlength="100" placeholder="Máximo 100 caracteres" value="{{ $customer->why_didnt_buy }}" data-validation="required" data-sanitize="trim">
+                                            <label for="why_didnt_buy">¿Por qué no compró por ahí?</label>
+                                            <input type="text" name="why_didnt_buy" id="why_didnt_buy" class="form-control{{ $errors->has('active') ? ' is-invalid' : '' }}" maxlength="100" placeholder="Máximo 100 caracteres" value="{{ $customer->why_didnt_buy }}" data-validation="" data-sanitize="trim">
                                             {!! $errors->first('why_didnt_buy', '<span class="form-text form-error">:message</span>') !!}
                                         </div>
                                     </div>

@@ -1,13 +1,17 @@
 @extends('layouts.auth')
 
-@section('title', 'Restablecer contraseña')
-@section('subtitle', 'Ingresa tu correo electrónico y te enviaremos un mensaje con instrucciones para restablecer tu contraseña.')
+@section('title', 'Reactivar cuenta')
+
+@section('subtitle')
+    Tu cuenta de usuario está <strong class="text-dark">desactivada</strong>. Ingresa tu correo electrónico y te enviaremos un mensaje con instrucciones para reactivar tu cuenta.
+@endsection
 
 @section('content')
     <div class="p-2 mt-4">
-        @if (session('status'))
+
+        @if (session('success'))
             <div class="alert alert-success" role="alert">
-                {{ session('status') }}
+                {{ session('success') }}
             </div>
         @endif
         @if (session('warning'))
@@ -15,7 +19,7 @@
                 {!! session('warning') !!}
             </div>
         @endif
-        <form method="POST" action="{{ route('password.email') }}" class="form-horizontal" >
+        <form method="POST" action="{{ route('reactivate_account.email') }}" class="form-horizontal">
             @csrf
             <div class="form-group auth-form-group-custom mb-4">
                 <i class="ri-user-2-line auti-custom-input-icon"></i>

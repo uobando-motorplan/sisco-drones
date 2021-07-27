@@ -153,14 +153,14 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="cell_number">Teléfono móvil</label> <small class="text-muted">(Ejemplo: 0985462885)</small>
-                                            <input type="text" name="cell_number" id="cell_number" class="form-control{{ $errors->has('cell_number') ? ' is-invalid' : '' }}" value="{{ $quotation->customer->cell_number }}" maxlength="10" placeholder="10 dígitos" data-validation="number" data-validation-optional="true" data-sanitize="trim">
+                                            <input type="text" name="cell_number" id="cell_number" class="form-control mobile_phone{{ $errors->has('cell_number') ? ' is-invalid' : '' }}" value="{{ $quotation->customer->cell_number }}" maxlength="10" placeholder="10 dígitos" data-validation="number" data-validation-optional="true" data-sanitize="trim">
                                             {!! $errors->first('cell_number', '<span class="form-text form-error">:message</span>') !!}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="phone_number">Teléfono fijo</label> <small class="text-muted">(Ejemplo: 042879215)</small>
-                                            <input type="text" name="phone_number" id="phone_number" class="form-control{{ $errors->has('phone_number') ? ' is-invalid' : '' }}" value="{{ $quotation->customer->phone_number }}" maxlength="9" placeholder="9 dígitos" data-validation="number" data-validation-optional="true" data-sanitize="trim">
+                                            <input type="text" name="phone_number" id="phone_number" class="form-control landline_phone{{ $errors->has('phone_number') ? ' is-invalid' : '' }}" value="{{ $quotation->customer->phone_number }}" maxlength="9" placeholder="9 dígitos" data-validation="number" data-validation-optional="true" data-sanitize="trim">
                                             {!! $errors->first('phone_number', '<span class="form-text form-error">:message</span>') !!}
                                         </div>
                                     </div>

@@ -9,10 +9,9 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use Notifiable;
-    use SoftDeletes;
+    use Notifiable, SoftDeletes;
 
-    const SYSTEM = 1;
+    const SISTEMA = 1;
 
     /**
      * The attributes that should be hidden for arrays.

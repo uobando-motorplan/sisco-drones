@@ -3,23 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Bank;
-use App\Drone;
-use App\Http\Requests\MyBankAccountRequest;
-use App\Http\Requests\MyContactInformationRequest;
-use App\Http\Requests\MyEmailRequest;
-use App\Http\Requests\MyPasswordRequest;
-use App\Http\Requests\MyPhotoRequest;
-use App\Http\Requests\PasswordRequest;
-use App\Location;
-use App\Notifications\BankAccountChangeNotificaction;
-use App\Notifications\EmailChangeNotificaction;
-use App\Notifications\PasswordChangeNotificaction;
 use App\Role;
 use App\User;
+use App\Drone;
+use App\Location;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\DroneSuspensionReason;
+use Illuminate\Support\Carbon;
+use App\DroneDeactivationReason;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
+use App\Http\Requests\MyEmailRequest;
+use App\Http\Requests\MyPhotoRequest;
 use Intervention\Image\Facades\Image;
+use App\Http\Requests\PasswordRequest;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\MyPasswordRequest;
+use App\Http\Requests\MyBankAccountRequest;
+use App\Http\Requests\DeactivateAccountRequest;
+use App\Notifications\EmailChangeNotificaction;
+use App\Http\Requests\MyContactInformationRequest;
+use App\Notifications\PasswordChangeNotificaction;
+use App\Notifications\AccountDeactivatedNotification;
+use App\Notifications\BankAccountChangeNotificaction;
 
 class UserController extends Controller
 {
@@ -41,8 +49,9 @@ class UserController extends Controller
     public function profile()
     {
         $banks = Bank::orderBy('name')->pluck('name', 'id');
+        $drone_deactivation_reasons = DroneDeactivationReason::orderBy('order')->pluck('name', 'id');
 
-        return view('users.profile', compact('banks'));
+        return view('users.profile', compact('banks', 'drone_deactivation_reasons'));
     }
 
     /**
@@ -208,5 +217,225 @@ class UserController extends Controller
         auth()->user()->save();
 
         return redirect()->route('home');
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function documents()
+    {
+        return view('users.documents');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function update_contract_file(Request $request)
+    {
+        $this->authorize('update', auth()->user());
+
+        // Valido el formulario
+        $rules = ['contract_file' => 'required|mimes:pdf|max:4000'];
+        $messages = [];
+        $attributes = ['contract_file' => 'archivo'];
+        $validated = $request->validate($rules, $messages, $attributes);
+
+        $file_extension = $request->contract_file->extension();
+        $original_file_name = $request->contract_file->getClientOriginalName();
+
+        // Elimino el archivo anterior
+        if (auth()->user()->drone->contract_file) {
+            Storage::disk('s3')->delete('drones/contracts/'.auth()->user()->drone->contract_file);
+        }
+        // Subo el archivo nuevo
+        $file_name = Str::random('40').'.'.strtolower($file_extension);
+        $file_path = 'drones/contracts/'.$file_name;
+        Storage::disk('s3')->put($file_path, file_get_contents($request->file('contract_file')));
+        
+        // Actualizo el registro
+        auth()->user()->drone->contract_file = $file_name;
+        auth()->user()->drone->save();
+
+        // Inicio la revisión del marco legal y notifico al asistente de talento humano
+        if (! auth()->user()->drone->legal_review_start_date 
+            AND auth()->user()->drone->contract_file 
+            AND auth()->user()->drone->confidentiality_agreement_file 
+            AND auth()->user()->drone->ruc_file) {
+
+            // Actualizo el estado
+            auth()->user()->drone->legal_review_start_date = Carbon::now();
+            auth()->user()->drone->save();
+
+            // Envía una notificación al ASISTENTE DE TALENTO HUMANO para que evalue el MARCO LEGAL
+            $url = env('SISCO_URL').'api/notifications/evaluate_legal_framework';
+            $response = Http::get($url, [
+                'api_key' => env('DRONES_KEY'),
+                'drone_id' => auth()->user()->drone->id
+            ]);
+        }
+
+        return redirect()->back()
+            ->with('success', 'El contrato de comisión mercantil se subió correctamente.');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function update_confidentiality_agreement_file(Request $request)
+    {
+        $this->authorize('update', auth()->user());
+
+        // Valido el formulario
+        $rules = ['confidentiality_agreement_file' => 'required|mimes:pdf|max:4000'];
+        $messages = [];
+        $attributes = ['confidentiality_agreement_file' => 'archivo'];
+        $validated = $request->validate($rules, $messages, $attributes);
+
+        $file_extension = $request->confidentiality_agreement_file->extension();
+        $original_file_name = $request->confidentiality_agreement_file->getClientOriginalName();
+
+        // Elimino el archivo anterior
+        if (auth()->user()->drone->confidentiality_agreement_file) {
+            Storage::disk('s3')->delete('drones/confidentiality-agreements/'.auth()->user()->drone->confidentiality_agreement_file);
+        }
+        // Subo el archivo nuevo
+        $file_name = Str::random('40').'.'.strtolower($file_extension);
+        $file_path = 'drones/confidentiality-agreements/'.$file_name;
+        Storage::disk('s3')->put($file_path, file_get_contents($request->file('confidentiality_agreement_file')));
+
+        // Actualizo el registro
+        auth()->user()->drone->confidentiality_agreement_file = $file_name;
+        auth()->user()->drone->save();
+
+        // Inicio la revisión del marco legal y notifico al asistente de talento humano
+        if (! auth()->user()->drone->legal_review_start_date 
+            AND auth()->user()->drone->contract_file 
+            AND auth()->user()->drone->confidentiality_agreement_file 
+            AND auth()->user()->drone->ruc_file) {
+
+            // Actualizo el estado
+            auth()->user()->drone->legal_review_start_date = Carbon::now();
+            auth()->user()->drone->save();
+
+            // Envía una notificación al ASISTENTE DE TALENTO HUMANO para que evalue el MARCO LEGAL
+            $url = env('SISCO_URL').'api/notifications/evaluate_legal_framework';
+            $response = Http::get($url, [
+                'api_key' => env('DRONES_KEY'),
+                'drone_id' => auth()->user()->drone->id
+            ]);
+        }
+
+        return redirect()->back()
+            ->with('success', 'El acuerdo de cofidencialidad se subió correctamente.');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function update_ruc_file(Request $request)
+    {
+        $this->authorize('update', auth()->user());
+
+        // Valido el formulario
+        $rules = ['ruc_file' => 'required|mimes:pdf|max:4000'];
+        $messages = [];
+        $attributes = ['ruc_file' => 'archivo'];
+        $validated = $request->validate($rules, $messages, $attributes);
+
+        $file_extension = $request->ruc_file->extension();
+        $original_file_name = $request->ruc_file->getClientOriginalName();
+
+        // Elimino el archivo anterior
+        if (auth()->user()->drone->ruc_file) {
+            Storage::disk('s3')->delete('drones/ruc/'.auth()->user()->drone->ruc_file);
+        }
+        // Subo el archivo nuevo
+        $file_name = Str::random('40').'.'.strtolower($file_extension);
+        $file_path = 'drones/ruc/'.$file_name;
+        Storage::disk('s3')->put($file_path, file_get_contents($request->file('ruc_file')));
+
+        // Actualizo el registro
+        auth()->user()->drone->ruc_file = $file_name;
+        auth()->user()->drone->save();
+
+        // Inicio la revisión del marco legal y notifico al asistente de talento humano
+        if (! auth()->user()->drone->legal_review_start_date 
+            AND auth()->user()->drone->contract_file 
+            AND auth()->user()->drone->confidentiality_agreement_file 
+            AND auth()->user()->drone->ruc_file) {
+
+            // Actualizo el estado
+            auth()->user()->drone->legal_review_start_date = Carbon::now();
+            auth()->user()->drone->save();
+
+            // Envía una notificación al ASISTENTE DE TALENTO HUMANO para que evalue el MARCO LEGAL
+            $url = env('SISCO_URL').'api/notifications/evaluate_legal_framework';
+            $response = Http::get($url, [
+                'api_key' => env('DRONES_KEY'),
+                'drone_id' => auth()->user()->drone->id
+            ]);
+        }
+
+        return redirect()->back()
+            ->with('success', 'El RUC se subió correctamente.');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\DeactivateAccountRequest
+     * @return \Illuminate\Http\Response
+     */
+    public function deactivate_account(DeactivateAccountRequest $request)
+    {
+        // Desactivo el acceso a Sisco Drones (Usuario en Sisco)
+        auth()->user()->active = false;
+        auth()->user()->save();
+
+        // Consulto el registro de dron
+        $drone = Drone::find(auth()->user()->drone->id);
+
+        // Desactivo el acceso a Portal Drones
+        $drone->drone_suspension_reason_id = DroneSuspensionReason::SOLICITUD_USUARIO;
+        $drone->drone_deactivation_reason_id = $request->drone_deactivation_reason_id;
+        $drone->active = false;
+        $drone->save();
+
+        // Consulto el motivo de la cancelación
+        $drone_suspension_reason = DroneSuspensionReason::find(DroneSuspensionReason::SOLICITUD_USUARIO);
+        $drone_deactivation_reason = DroneDeactivationReason::find($request->drone_deactivation_reason_id);
+
+        $description = 'El dron ha desactivado su cuenta de usuario Sisco Drones.<br>';
+        $description .= '<i class="text-muted">Motivo: </i>'.$drone_suspension_reason->name.' - '.$drone_deactivation_reason->name.'<br>';
+        $description .= '<i class="text-muted">Cometario: </i>'.$request->comment;
+
+        // Creo una observación automática del sistema
+        auth()->user()->drone->observations()->create([
+            'user_id' => User::SISTEMA,
+            'description' => $description
+        ]);
+
+        // Envio una notificación al dron
+        auth()->user()->notify(new AccountDeactivatedNotification());
+
+        // Cierro la sesión del usuario
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()
+            ->route('reactivate_account.index')
+            ->with('success', 'Tu cuenta de usuario Ejecutivos Drones ha sido desactivada exitósamente.');
     }
 }

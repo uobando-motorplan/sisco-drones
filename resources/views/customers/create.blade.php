@@ -127,14 +127,14 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="cell_number">Teléfono móvil</label> <small class="text-muted">(Ejemplo: 0985462885)</small>
-                                            <input type="text" name="cell_number" id="cell_number" class="form-control{{ $errors->has('cell_number') ? ' is-invalid' : '' }}" value="{{ old('cell_number') }}" maxlength="10" placeholder="10 dígitos" data-validation="number" data-validation-optional="true" data-sanitize="trim">
+                                            <input type="text" name="cell_number" id="cell_number" class="form-control mobile_phone{{ $errors->has('cell_number') ? ' is-invalid' : '' }}" value="{{ old('cell_number') }}" maxlength="10" placeholder="10 dígitos" data-validation="number" data-validation-optional="true" data-sanitize="trim">
                                             {!! $errors->first('cell_number', '<span class="form-text form-error">:message</span>') !!}
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="phone_number">Teléfono fijo</label> <small class="text-muted">(Ejemplo: 042879215)</small>
-                                            <input type="text" name="phone_number" id="phone_number" class="form-control{{ $errors->has('phone_number') ? ' is-invalid' : '' }}" value="{{ old('phone_number') }}" maxlength="9" placeholder="9 dígitos" data-validation="number" data-validation-optional="true" data-sanitize="trim">
+                                            <input type="text" name="phone_number" id="phone_number" class="form-control landline_phone{{ $errors->has('phone_number') ? ' is-invalid' : '' }}" value="{{ old('phone_number') }}" maxlength="9" placeholder="9 dígitos" data-validation="number" data-validation-optional="true" data-sanitize="trim">
                                             {!! $errors->first('phone_number', '<span class="form-text form-error">:message</span>') !!}
                                         </div>
                                     </div>
@@ -179,7 +179,7 @@
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="plan_id">Plan *</label>
-                                            <select name="plan_id" id="plan_id" class="form-control{{ $errors->has('plan_id') ? ' is-invalid' : '' }}" data-validation="required">
+                                            <select name="plan_id" id="plan_id" class="form-control{{ $errors->has('plan_id') ? ' is-invalid' : '' }}" data-validation="required" data-value="{{ old('plan_id') }}">
                                                 <option value="">- Seleccione un item -</option>
                                             </select>
                                             {!! $errors->first('plan_id', '<span class="form-text form-error">:message</span>') !!}
@@ -190,7 +190,7 @@
                                     <div class="col-md">
                                         <div class="form-group">
                                             <label for="preference_id">Preferencia *</label>
-                                            <select name="preference_id" id="preference_id" class="custom-select{{ $errors->has('preference_id') ? ' is-invalid' : '' }}" data-validation="required">
+                                            <select name="preference_id" id="preference_id" class="custom-select{{ $errors->has('preference_id') ? ' is-invalid' : '' }}" data-validation="required" data-value="{{ old('preference_id') }}">
                                                 <option value="">- Seleccione un item -</option>
                                             </select>
                                             {!! $errors->first('preference_id', '<span class="form-text form-error">:message</span>') !!}
@@ -341,11 +341,11 @@
 @push('js')
     <script src="{{ asset('assets/js/quotation.js') }}"></script>
     <script type="text/javascript">
-    $(document).ready(function() {
-        $('#identification_type').trigger('change');
-        $('#province_id').trigger('change');
-        $('#product_id').trigger('change');
-        $('#has_applied_to_credit').trigger('change');
-    });
+        $(document).ready(function() {
+            $('#identification_type').trigger('change');
+            $('#province_id').trigger('change');
+            $('#product_id').trigger('change');
+            $('#has_applied_to_credit').trigger('change');
+        });
     </script>
 @endpush
