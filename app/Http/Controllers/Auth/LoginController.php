@@ -57,7 +57,7 @@ class LoginController extends Controller
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            if (in_array($user->drone_suspension_reason_id, [DroneSuspensionReason::PROCESO_INCONCLUSO, DroneSuspensionReason::SOLICITUD_USUARIO])) {
+            if (in_array($user->drone->drone_suspension_reason_id, [DroneSuspensionReason::PROCESO_INCONCLUSO, DroneSuspensionReason::SOLICITUD_USUARIO])) {
                 return redirect()->route('reactivate_account.index');
             } else {
                 return redirect()->back()->with('warning', 'Estas credenciales no coinciden con nuestros registros.');
