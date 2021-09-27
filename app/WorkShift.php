@@ -16,4 +16,14 @@ class WorkShift extends Model
      * @var array
      */
     protected $dates = ['date'];
+
+    /**
+     *
+     * Relación uno a muchos (Inversa)
+     *
+     */
+    public function schedule()
+    {
+        return $this->belongsTo(Schedule::class);
+    }
 }

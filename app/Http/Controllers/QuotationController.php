@@ -139,14 +139,16 @@ class QuotationController extends Controller
         $source = Source::whereChannelId(Channel::DRONES)->first();
 
         // Busco el próximo turno de trabajo
-        $work_shift = WorkShift::whereUserId($seller->id)
+        $work_shift = WorkShift::select('id', 'schedule_id', 'date')
+            ->whereUserId($seller->id)
             ->whereDate('date', '>', Carbon::now())
             ->whereEventCategoryId(EventCategory::TURNO)
+            ->with('schedule:id,entry_time')
             ->first();
 
         // Defino la fecha del seguimiento automático para el vendedor
         if ($work_shift) {
-            $followup_date = Carbon::parse($work_shift->date->format('Y-m-d').' 09:00:00');
+            $followup_date = Carbon::parse($work_shift->date->format('Y-m-d').' '.$work_shift->schedule->entry_time);
         } else {
             $followup_date = Carbon::parse(Carbon::now()->addDays(1)->format('Y-m-d').' 09:00:00');
         }
