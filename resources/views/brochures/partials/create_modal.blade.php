@@ -21,11 +21,11 @@
                     <div class="d-flex flex-row mb-4">
                         <div class="custom-control custom-radio mr-3">
                             <input type="radio" id="new_referred_1" name="new_referred" value="0" class="custom-control-input" {{ old('new_referred') ? (old('new_referred') == '0' ? 'checked' : '') : 'checked' }}>
-                            <label class="custom-control-label" for="new_referred_1">Prospecto existente</label>
+                            <label class="custom-control-label" for="new_referred_1">Referido existente</label>
                         </div>
                         <div class="custom-control custom-radio">
                             <input type="radio" id="new_referred_2" name="new_referred" value="1" class="custom-control-input" {{ old('new_referred') == '1' ? 'checked' : '' }}>
-                            <label class="custom-control-label" for="new_referred_2">Nuevo prospecto</label>
+                            <label class="custom-control-label" for="new_referred_2">Nuevo referido</label>
                         </div>
                     </div>
                     <div class="row">
@@ -106,8 +106,8 @@
                                 <label for="plan_id">Plan *</label>
                                 <select name="plan_id" id="plan_id" class="custom-select{{ $errors->has('plan_id') ? ' is-invalid' : '' }}" data-validation="required">
                                     <option value="">- Seleccione un item -</option>
-                                    @foreach ($plans as $id => $amount)
-                                        <option value="{{ $id }}" {{ old('plan_id') == $id ? 'selected' : '' }}>${{ $amount }}</option>
+                                    @foreach ($plans as $plan)
+                                        <option value="{{ $plan->id }}" {{ old('plan_id') == $plan->id ? 'selected' : '' }}>${{ $plan->amount }}</option>
                                     @endforeach
                                 </select>
                                 {!! $errors->first('plan_id', '<span class="form-text form-error">:message</span>') !!}

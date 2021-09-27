@@ -86,8 +86,8 @@ class PaymentRequestController extends Controller
                 'quotation_id.*' => 'exists:quotations,id'
             ], 
             [
-               'quotation_id.required' => 'Debe seleccionar por lo menos un referido.',
-               'quotation_id.*.exists' => 'Uno o más referidos no existen.',
+                'quotation_id.required' => 'Debe seleccionar por lo menos un referido.',
+                'quotation_id.*.exists' => 'Uno o más referidos no existen.',
             ],
             [
                 'quotation_id' => 'referido',

@@ -88,9 +88,10 @@ class HomeController extends Controller
         $observations = QuotationObservation::whereHas('quotation', function($query) {
                 $query->where('drone_id', auth()->user()->id);
             })
-            ->whereDate('tracing_date', Carbon::now()->format('Y-m-d'))
+            ->whereDate('followup_date', Carbon::now()->addDays(1)->format('Y-m-d'))
+            ->whereType('S')
             ->with(['quotation.customer:id,names,surnames', 'quotation.seller:id,name,last_name'])
-            ->orderBy('tracing_date', 'asc')
+            ->orderBy('followup_date', 'asc')
             ->get();
 
         // Días del periodo

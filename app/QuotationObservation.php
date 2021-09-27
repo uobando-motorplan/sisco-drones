@@ -11,13 +11,27 @@ class QuotationObservation extends Model
 
     const FECHA_CREACION = 1;
     const FECHA_SEGUIMIENTO = 2;
+    // Tipo
+    const SEGUIMIENTO = 'S';
+    const OBSERVACION = 'O';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'quotation_id', 'user_id', 'followup_type_id', 'status_id', 'closure_reason_id', 
+        'score_id', 'observation', 'followup_date', 'admission_application', 'type'
+    ];
 
     /**
      * The attributes that should be mutated to dates.
      *
      * @var array
      */
-    protected $dates = ['tracing_date'];
+    protected $dates = ['followup_date'];
+
 
     /**
      *

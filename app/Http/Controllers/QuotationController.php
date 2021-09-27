@@ -6,6 +6,7 @@ use App\City;
 use App\Plan;
 use App\Role;
 use App\User;
+use App\Event;
 use App\Group;
 use App\Media;
 use App\Score;
@@ -17,22 +18,25 @@ use App\Brochure;
 use App\Customer;
 use App\Province;
 use App\Quotation;
+use App\WorkShift;
 use App\Occupation;
 use App\Preference;
+use App\FollowupType;
 use App\ClosureReason;
 use App\ContactMethod;
+use App\EventCategory;
 use App\OccupationPeriod;
 use App\Rules\ValidarRuc;
 use App\CustomerObservation;
 use App\Rules\ValidarCedula;
 use Illuminate\Http\Request;
 use App\QuotationObservation;
+use Illuminate\Support\Carbon;
 use Yajra\DataTables\DataTables;
 use App\Http\Requests\ReportRequest;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\QuotationRequest;
 use App\Rules\ValidarDigitosIdentificacion;
-use App\Notifications\NewReferredNotification;
 
 class QuotationController extends Controller
 {
@@ -122,23 +126,43 @@ class QuotationController extends Controller
 
         // Actualizo el prospecto
         $customer->locked = true;
+        $customer->seller_id = $seller->id;
         $customer->update($request->all());
+
+        // Creo una observación para saber a qué vendedor fue asignado al prospecto
+        $customer->observations()->create([
+            'user_id' => User::SISTEMA,
+            'observation' => 'Asignado automáticamente a '.$seller->getFullName().' por Sistema.',
+        ]);
 
         // Busco la fuente de información
         $source = Source::whereChannelId(Channel::DRONES)->first();
+
+        // Busco el próximo turno de trabajo
+        $work_shift = WorkShift::whereUserId($seller->id)
+            ->whereDate('date', '>', Carbon::now())
+            ->whereEventCategoryId(EventCategory::TURNO)
+            ->first();
+
+        // Defino la fecha del seguimiento automático para el vendedor
+        if ($work_shift) {
+            $followup_date = Carbon::parse($work_shift->date->format('Y-m-d').' 09:00:00');
+        } else {
+            $followup_date = Carbon::parse(Carbon::now()->addDays(1)->format('Y-m-d').' 09:00:00');
+        }
 
         // Registro la cotización
         $quotation = (new Quotation)->fill($request->all());
         $quotation->customer_id = $customer->id;
         $quotation->drone_id = auth()->user()->id;
         $quotation->source_id = $source->id;
-        $quotation->status_id = Status::POR_GESTIONAR;
+        $quotation->status_id = Status::EN_SEGUIMIENTO;
         $quotation->score_id = Score::CLIENTE_INDECISO;
         $quotation->seller_id = $customer->seller->id;
         $quotation->group_id = $customer->seller->group_id;
         $quotation->supervisor_id = $customer->seller->group->supervisor_id;
         $quotation->created_from = Quotation::DRONES_WEB;
-        $quotation->paid = false;
+        $quotation->followup_date = $followup_date;
         $quotation->save();
 
         // Actualizo el contador de prospectos asignados
@@ -146,8 +170,32 @@ class QuotationController extends Controller
         $seller->timestamps = false;
         $seller->save();
 
-        // Envío la notificación al vendedor
-        $seller->notify(new NewReferredNotification($quotation));
+        // Creo el seguimiento automático para el vendedor
+        $quotation->observations()->create([
+            'user_id' => $customer->seller->id,
+            'followup_type_id' => FollowupType::LLAMAR,
+            'followup_date' => $followup_date,
+            'type' => QuotationObservation::SEGUIMIENTO
+        ]);
+
+        // Creo el evento del seguimiento automático para el vendedor
+        $quotation->seller->events()->create([
+            'event_category_id' => EventCategory::SEGUIMIENTO,
+            'related_id' => $quotation->id,
+            'title' => $quotation->customer->getFullName(),
+            'is_all_day' => false,
+            'start_date' => $quotation->followup_date,
+            'end_date' => Carbon::parse($quotation->followup_date)->addHour(),
+            'url' => route('quotations.show', $quotation->id),
+            'type' => Event::AUTOMATICO,
+        ]);
+
+        // Envía una notificación al VENDEDOR para indicarle que tiene una nueva oportunidad comercial.
+        $url = env('SISCO_URL').'api/notifications/new_quotation';
+        $response = Http::get($url, [
+            'api_key' => env('DRONES_KEY'),
+            'quotation_id' => $quotation->id
+        ]);
 
         return redirect()
             ->route('quotations.index')

@@ -33,7 +33,7 @@ class Quotation extends Model
      *
      * @var array
      */
-    protected $dates = ['attended_at', 'tracing_date'];
+    protected $dates = ['attended_at', 'followup_date'];
 
     /**
      *

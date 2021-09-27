@@ -258,7 +258,7 @@
                                     <td>{{ $quotation_observation->user->getFullName() }}</td>
                                     <td>{!! $quotation_observation->observation !!}</td>
                                     <td>{{ $quotation_observation->status ? $quotation_observation->status->description : '' }}</td>
-                                    <td>{{ $quotation_observation->tracing_date ? $quotation_observation->tracing_date->format('d/m/Y H:i') : '' }}</td>
+                                    <td>{{ $quotation_observation->followup_date ? $quotation_observation->followup_date->format('d/m/Y H:i') : '' }}</td>
                                     <td>{{ $quotation_observation->score_id }} {{ isset($quotation_observation->score_id) ? ' - '.$quotation_observation->score->description : '' }}</td>
                                     <td>{{ $quotation_observation->created_at->format('d/m/Y H:i:s') }}</td>
                                 </tr>

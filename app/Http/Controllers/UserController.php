@@ -418,7 +418,9 @@ class UserController extends Controller
 
         $description = 'El dron ha desactivado su cuenta de usuario Sisco Drones.<br>';
         $description .= '<i class="text-muted">Motivo: </i>'.$drone_suspension_reason->name.' - '.$drone_deactivation_reason->name.'<br>';
-        $description .= '<i class="text-muted">Cometario: </i>'.$request->comment;
+        if ($request->comment) {
+            $description .= '<i class="text-muted">Cometario: </i>'.$request->comment;
+        }
 
         // Creo una observación automática del sistema
         auth()->user()->drone->observations()->create([
@@ -428,6 +430,13 @@ class UserController extends Controller
 
         // Envio una notificación al dron
         auth()->user()->notify(new AccountDeactivatedNotification());
+
+        // Envía una notificación al ASISTENTE DE TALENTO HUMANO para indicarle que un dron se ha desactivado
+        $url = env('SISCO_URL').'api/notifications/deactivate_account';
+        $response = Http::get($url, [
+            'api_key' => env('DRONES_KEY'),
+            'drone_id' => auth()->user()->drone->id
+        ]);
 
         // Cierro la sesión del usuario
         Auth::logout();

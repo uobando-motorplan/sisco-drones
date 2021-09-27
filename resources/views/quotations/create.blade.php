@@ -343,7 +343,7 @@
 @push('js')
     <script src="{{ asset('assets/js/quotation.js') }}"></script>
     <script type="text/javascript">
-    $( document ).ready(function() {
+    $(document).ready(function() {
         $('#identification_type').trigger('change');
         $('#province_id').trigger('change');
         $('#product_id').trigger('change');

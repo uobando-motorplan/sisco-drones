@@ -8,6 +8,7 @@ use App\Drone;
 use Illuminate\Support\Str;
 use App\ReactivationRequest;
 use Illuminate\Http\Request;
+use App\DroneSuspensionReason;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -44,13 +45,15 @@ class ReactivateAccountController extends Controller
         $validated = $request->validate($rules, $messages, $attributes);
 
         // Consulto los datos del usuario
-        $user = User::select('id', 'name', 'email', 'active')
+        $user = User::select('id', 'drone_id', 'name', 'email', 'active')
             ->whereEmail($request->email)
             ->whereRoleId(Role::DRONE)
+            ->with('drone:id,drone_suspension_reason_id')
             ->first();
 
-        // Valido que el email del usuario exista y que sea de un dron
-        if (!$user) {
+        // Valido que el usuario exista, que sea de un dron y que no haya sido suspendido desde sisco
+        if (! $user OR ! in_array($user->drone->drone_suspension_reason_id, 
+            [DroneSuspensionReason::PROCESO_INCONCLUSO, DroneSuspensionReason::SOLICITUD_USUARIO])) {
             return redirect()->back()->with('warning', 'Estas credenciales no coinciden con nuestros registros.');
         }
 

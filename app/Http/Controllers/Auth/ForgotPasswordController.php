@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Role;
 use App\User;
 use Illuminate\Http\Request;
+use App\DroneSuspensionReason;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Validation\ValidationException;
@@ -46,7 +47,11 @@ class ForgotPasswordController extends Controller
         }
 
         if (! $user->active) {
-            return back()->with('warning', 'Tu cuenta de usuario ha sido desactivada. Haz clic <strong><a href="'.route('reactivate_account.index').'">aquí</a></strong> para reactivarla.');
+            if (in_array($user->drone->drone_suspension_reason_id, [DroneSuspensionReason::PROCESO_INCONCLUSO, DroneSuspensionReason::SOLICITUD_USUARIO])) {
+                return redirect()->route('reactivate_account.index');
+            } else {
+                return back()->with('warning', 'Estas credenciales no coinciden con nuestros registros.');
+            }
         } else {
             $response = $this->broker()->sendResetLink(
                 $request->only('email')

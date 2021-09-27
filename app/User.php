@@ -58,6 +58,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(PaymentApplication::class, 'drone_id');
     }
+    public function events()
+    {
+        return $this->hasMany(Event::class)->select('id', 'user_id');
+    }
 
     /*
      *

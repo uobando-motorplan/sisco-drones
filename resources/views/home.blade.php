@@ -149,13 +149,13 @@
                                 @foreach ($observations as $observation)
                                     <li class="activity-list">
                                         <div class="activity-icon avatar-xs">
-                                            <span class="avatar-title bg-soft-secondary text-info rounded-circle">
+                                            <span class="avatar-title bg-soft-info text-info rounded-circle">
                                                 <i class="ri-edit-2-fill"></i>
                                             </span>
                                         </div>
                                         <div>
-                                            <a href="{{ route('quotations.show', $observation->quotation_id) }}" class="text-info">{{ $observation->quotation->customer->getFullName() }}</a> <small class="text-muted">{{ $observation->tracing_date->format('H:i') }}</small><br>
-                                            <span class="font-size-12">{{ Illuminate\Support\Str::limit($observation->observation, 100) }}</span>
+                                            <h5 class="font-size-12 mb-0">{{ $observation->followup_date->format('H:i') }} <small class="text-muted"></small></h5>
+                                            <a href="{{ route('quotations.show', $observation->quotation_id) }}" class="text-muted">{{ $observation->quotation->customer->getFullName() }}</a> 
                                         </div>
                                     </li>
                                 @endforeach

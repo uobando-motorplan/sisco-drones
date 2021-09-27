@@ -3,9 +3,22 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Event extends Model
 {
+    use SoftDeletes;
+
+    const AUTOMATICO = 'A';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'user_id', 'event_category_id', 'related_id', 'title', 'is_all_day', 'start_date', 'end_date', 'url', 'type'
+    ];
 
     /**
      * The attributes that should be mutated to dates.
