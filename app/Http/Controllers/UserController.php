@@ -334,7 +334,7 @@ class UserController extends Controller
         }
 
         return redirect()->back()
-            ->with('success', 'El acuerdo de cofidencialidad se subió correctamente.');
+            ->with('success', 'El acuerdo de confidencialidad se subió correctamente.');
     }
 
     /**

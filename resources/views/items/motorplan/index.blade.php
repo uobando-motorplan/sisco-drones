@@ -43,7 +43,14 @@
         @endforeach
     </div>
     <!-- end row -->
-
-    @include('items.partials.gallery_modal')
 @endsection
 
+@push('css')
+    <!-- CDN Files -->
+    <link href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" rel="stylesheet">
+@endpush
+
+@push('js')
+    <!-- CDN Files -->
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
+@endpush

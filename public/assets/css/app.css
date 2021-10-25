@@ -1208,7 +1208,7 @@ body[data-layout=horizontal][data-layout-size=boxed] .navbar-header {
 }
 
 .avatar-xl {
-    width: 7.5rem;    
+    width: 7.5rem;
     height: 7.5rem
 }
 
@@ -4777,12 +4777,10 @@ a:hover {
     position: absolute;
     right: 0px;
     bottom: 0px;
-    /* color: #232527; */
     color: #ffffff;
     font-size: 17px;
     font-weight: 400;
     padding: 5px 16px 2px 10px;
-    /* background-color: #e9edef; */
     background-color: #d40d0d;
     transition: all 0.3s ease;
     -moz-transition: all 0.3s ease;
@@ -4796,7 +4794,6 @@ a:hover {
     content: '';
     left: -25px;
     top: 0px;
-    /* border-bottom: 32px solid #e9edef; */
     border-bottom: 32px solid #d40d0d;
     border-left: 25px solid transparent;
     transition: all 0.3s ease;
@@ -4999,7 +4996,15 @@ a:hover {
     z-index: 100;
 }
 
-.inner-box .product-like a {
+.inner-box .product-tour {
+    position: absolute;
+    top: 50px;
+    right: 5px;
+    z-index: 100;
+}
+
+.inner-box .product-like a,
+.inner-box .product-tour a {
     display: inline-block;
     width: 40px;
     height: 40px;
@@ -5015,6 +5020,13 @@ a:hover {
 .inner-box .product-like.active>a {
     border: 2px solid rgba(255, 255, 255, 0.4);
     background-color: #ff3d60;
+    color: #fff;
+}
+
+.inner-box .product-tour a:hover,
+.inner-box .product-tour.active>a {
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    background-color: #4daee9;
     color: #fff;
 }
 

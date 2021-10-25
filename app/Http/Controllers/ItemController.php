@@ -218,17 +218,6 @@ class ItemController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Item  $item
-     * @return \Illuminate\Http\Response
-     */
-    public function gallery(Item $item)
-    {
-        return view('items.gallery', compact('item'));
-    }
-
-    /**
      * Agrega el ID de un artículo en la sesión del brochure.
      *
      * @param  \Illuminate\Http\Request  $request

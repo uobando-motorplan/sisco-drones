@@ -85,7 +85,6 @@ Route::middleware(['active'])->group(function () {
     Route::get('items/list', 'ItemController@list')->name('items.list');
     Route::get('items/{product}', 'ItemController@index')->name('items.index');
     Route::get('items/{product}/search', 'ItemController@search')->name('items.search');
-    Route::get('items/{item}/gallery', 'ItemController@gallery')->name('items.gallery');
     // Brochures
     Route::post('brochures/{brochure}/notify', 'BrochureController@notify')->name('brochures.notify');
     Route::get('brochures/{slug}/pdf', 'BrochureController@pdf')->name('brochures.pdf');

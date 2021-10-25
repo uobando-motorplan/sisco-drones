@@ -21,11 +21,11 @@
                     <div class="d-flex flex-row mb-4">
                         <div class="custom-control custom-radio mr-3">
                             <input type="radio" id="new_referred_1" name="new_referred" value="0" class="custom-control-input" {{ old('new_referred') ? (old('new_referred') == '0' ? 'checked' : '') : 'checked' }}>
-                            <label class="custom-control-label" for="new_referred_1">Referido existente</label>
+                            <label class="custom-control-label" for="new_referred_1">A uno de mis referidos</label>
                         </div>
                         <div class="custom-control custom-radio">
                             <input type="radio" id="new_referred_2" name="new_referred" value="1" class="custom-control-input" {{ old('new_referred') == '1' ? 'checked' : '' }}>
-                            <label class="custom-control-label" for="new_referred_2">Nuevo referido</label>
+                            <label class="custom-control-label" for="new_referred_2">A un nuevo referido</label>
                         </div>
                     </div>
                     <div class="row">

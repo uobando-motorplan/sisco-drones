@@ -9,12 +9,22 @@
             </a>
         </div>
     @endif
-    <a href="javascript:void(0);" data-toggle="modal" data-target="#itemShowModal" data-name="{{ $item->real_estate_project_id ? $item->real_estate_project->name : '' }} {{ $item->name }}" data-url="{{ route('items.gallery', $item->id) }}">
-        <div class="image">
-            <img src="{{ $item->imagePath().$item->image }}" class="w-100">
-            <div class="price">${{ number_format($item->price) }}</div>
+    @if ($item->url)
+        <div class="product-tour" data-toggle="tooltip" data-placement="top" title="Tour virtual">
+            <a data-fancybox="single-{{ $item->id }}" data-src="{{ $item->url }}" data-type="iframe" href="{{ $item->url }}" id="iframecontent-{{ $item->id }}">
+                <i class="mdi mdi-binoculars"></i>
+            </a>
         </div>
-    </a>
+    @endif
+    <div class="image">
+        <a href="javascript:void(0);" data-fancybox="gallery-{{ $item->id }}" data-src="{{ $item->imagePath().$item->image }}" data-caption="<b> {{ mb_convert_case(($item->real_estate_project_id ? $item->real_estate_project->name : ''), MB_CASE_UPPER, 'UTF-8') }} {{ mb_convert_case($item->name, MB_CASE_UPPER, "UTF-8") }}</b><br>{{ ($item->real_estate_project_id ? $item->real_estate_project->address : '') }}">
+            <img src="{{ $item->imagePath().$item->image }}" class="w-100">
+        </a>
+        @foreach ($item->photos as $photo)
+            <a data-fancybox="gallery-{{ $item->id }}" data-src="{{ $photo->imagePath().$photo->name }}" data-caption="<b> {{ mb_convert_case(($item->real_estate_project_id ? $item->real_estate_project->name : ''), MB_CASE_UPPER, 'UTF-8') }} {{ mb_convert_case($item->name, MB_CASE_UPPER, "UTF-8") }}</b><br>{{ ($item->real_estate_project_id ? $item->real_estate_project->address : '') }}"></a>
+        @endforeach
+        <div class="price">${{ number_format($item->price) }}</div>
+    </div>
     <div class="brand d-flex justify-content-start h-100">
         @if ($item->real_estate_project_id)
             <img src="{{ $item->real_estate_project->imagePath().$item->real_estate_project->image }}" class="brand-logo my-auto">
@@ -67,7 +77,7 @@
         @endif
     </div>
     @if ($item->real_estate_project_id)
-        <div class="address">
+        <div class="px-2 pb-2">
             {{ $item->real_estate_project->address }}
         </div>
     @endif

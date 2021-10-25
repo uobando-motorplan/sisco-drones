@@ -38,6 +38,6 @@ class PdfController extends Controller
     {
         $pdf = PDF::loadView('pdf.confidentiality_agreement')->setPaper('a4', 'portrait');
 
-        return $pdf->stream('Acuerdo-de-cofidencialidad-y-no-divulgación-de-contenido'.date('Ymdhis').'.pdf');
+        return $pdf->stream('Acuerdo-de-confidencialidad-y-no-divulgación-de-contenido'.date('Ymdhis').'.pdf');
     }
 }

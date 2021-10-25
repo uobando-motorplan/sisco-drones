@@ -76,8 +76,8 @@
 
     <div class="row">
         <div class="col-xl-4 mb-2">
-            <h5>Acuerdo de cofidencialidad y no divulgación de contenido {!! auth()->user()->drone->confidentiality_agreement_file ? '<small class="text-success">Subido</small>' : '<small class="text-muted">Pendiente</small>' !!}</small></h5>
-            Descarga, firma, escanea y sube tu acuerdo de cofidencialidad. <br>
+            <h5>Acuerdo de confidencialidad y no divulgación de contenido {!! auth()->user()->drone->confidentiality_agreement_file ? '<small class="text-success">Subido</small>' : '<small class="text-muted">Pendiente</small>' !!}</small></h5>
+            Descarga, firma, escanea y sube tu acuerdo de confidencialidad. <br>
             <a href="{{ route('pdf.confidentiality_agreement') }}" target="_blank" class="btn btn-outline-primary my-2 waves-effect waves-light">Descargar</a>
         </div>
         <div class="col-xl-6">
