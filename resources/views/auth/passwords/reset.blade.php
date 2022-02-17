@@ -37,7 +37,7 @@
                 <button class="btn btn-primary w-md waves-effect waves-light" type="submit">Continuar</button>
             </div>
             <div class="mt-4 text-center">
-                <a href="{{ url('/') }}" class="text-muted">Iniciar sesión</a>
+                <a href="{{ route('login') }}" class="text-muted">Iniciar sesión</a>
             </div>
         </form>
     </div>

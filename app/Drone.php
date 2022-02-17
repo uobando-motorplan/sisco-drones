@@ -24,8 +24,12 @@ class Drone extends Model
      * Devuelve el nombre completo
      *
      */
-    public function getFullName()
+    public function getFullName($names_first = false)
     {
+        if ($names_first) {
+            return $this->names.' '.$this->surnames;
+        }
+
         return $this->surnames.' '.$this->names;
     }
 }

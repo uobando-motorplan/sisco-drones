@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -72,12 +73,12 @@ Route::middleware(['active'])->group(function () {
     // Agenda
     Route::get('monitoring', 'EventController@index')->name('events.index');
     // Comisiones
-    Route::get('accumulated-commissions', 'PaymentRequestController@accumulated')->name('payment_requests.accumulated');
     Route::get('payment-requests/datatables', 'PaymentRequestController@datatables')->name('payment_requests.datatables');
     Route::get('payment-requests', 'PaymentRequestController@index')->name('payment_requests.index');
+
+    Route::get('payment-requests/details', 'PaymentRequestController@details')->name('payment_requests.details');
     Route::get('payment-requests/create', 'PaymentRequestController@create')->name('payment_requests.create');
     Route::post('payment-requests', 'PaymentRequestController@store')->name('payment_requests.store');
-    Route::put('payment-requests/{payment_request}', 'PaymentRequestController@cancel')->name('payment_requests.cancel');
     Route::get('payment-requests/{payment_request}', 'PaymentRequestController@show')->name('payment_requests.show');
     // Artículos
     Route::get('items/add', 'ItemController@add')->name('items.add');

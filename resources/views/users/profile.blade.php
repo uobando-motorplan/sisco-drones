@@ -189,7 +189,7 @@
                         <div class="form-group">
                             <div class="form-group">
                                 <label for="bank_id">Banco *</label>
-                                <select name="bank_id" id="bank_id" class="form-control{{ $errors->has('bank_id') ? ' is-invalid' : '' }}" data-validation="required">
+                                <select name="bank_id" id="bank_id" class="custom-select{{ $errors->has('bank_id') ? ' is-invalid' : '' }}" data-validation="required">
                                     <option value="">- Seleccione un item -</option>
                                     @foreach ($banks as $id => $name)
                                         <option value="{{ $id }}" {{ auth()->user()->drone->bank_id == $id ? 'selected' : '' }}>{{ $name }}</option>
@@ -202,7 +202,7 @@
                             <div class="col-sm-6">
                                 <div class="form-group">
                                     <label for="bank_account_type">Tipo de cuenta *</label>
-                                    <select name="bank_account_type" id="bank_account_type" class="form-control{{ $errors->has('bank_account_type') ? ' is-invalid' : '' }}" data-validation="required">
+                                    <select name="bank_account_type" id="bank_account_type" class="custom-select{{ $errors->has('bank_account_type') ? ' is-invalid' : '' }}" data-validation="required">
                                         <option value="">- Seleccione un item -</option>
                                         <option value="A" {{ auth()->user()->drone->bank_account_type == App\Bank::AHORROS ? 'selected' : '' }}>Ahorros</option>
                                         <option value="C" {{ auth()->user()->drone->bank_account_type == App\Bank::CORRIENTE ? 'selected' : '' }}>Corriente</option>

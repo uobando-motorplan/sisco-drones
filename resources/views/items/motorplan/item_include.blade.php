@@ -34,6 +34,9 @@
             <li><span class="mdi mdi-calendar-clock icon"></span>{{ $item->main_feature_1 }}</li>
             <li><span class="mdi mdi-gas-station icon"></span>{{ $item->main_feature_2 }}</li>
             <li><span class="mdi mdi-engine icon"></span>{{ $item->main_feature_3 }}</li>
+            @if ($item->main_feature_4)
+                <li><span class="mdi mdi-piston icon"></span>{{ $item->main_feature_4 }}</li>
+            @endif
         </ul>
     </div>
     <div class="features">

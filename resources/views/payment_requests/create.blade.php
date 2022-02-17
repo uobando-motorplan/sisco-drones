@@ -20,271 +20,283 @@
     </div>
     <!-- end page-title -->
 
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <p>Selecciona uno o más referidos para crear tu solicitud de pago.</p>
-
-                    @if ($errors->any())
-                        <div class="alert alert-warning" role="alert">
-                            <button type="button" class="close pl-2" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            <i class="mdi mdi-alert-outline pr-2"></i> 
-                            @foreach ($errors->all() as $error)
-                                {{ $error }}<br>
-                            @endforeach
-                        </div>
-                    @endif
-                    <form method="POST" action="{{ route('payment_requests.store') }}">
-                        @csrf
-                        <div class="table-responsive">
-                            <table class="table table-sm table-bordered mb-0">
-                                <thead>
-                                    <tr class="bg-secondary text-white">
-                                        <th class="text-center">
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="selectAll" name="">
-                                                <label class="custom-control-label" for="selectAll"></label>
-                                            </div>
-                                        </th>
-                                        <th>Referido</th>
-                                        <th>Fecha facturación</th>
-                                        <th>Producto</th>
-                                        <th class="text-right">Plan</th>
-                                        <th class="text-right">Comisión</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @php
-                                        $i = 0;
-                                    @endphp
-                                    @foreach ($quotations as $quotation)
-                                        <tr>
-                                            <td class="text-center">
-                                                <div class="custom-control custom-checkbox">
-                                                    <input type="checkbox" class="custom-control-input commision" id="customCheck{{ $i }}" name="quotation_id[]" value="{{ $quotation->id }}" data-commission="{{ $quotation->commision_value }}">
-                                                    <label class="custom-control-label" for="customCheck{{ $i }}"></label>
-                                                </div>
-                                            </td>
-                                            <td>{{ $quotation->surnames }} {{ $quotation->names }}</td>
-                                            <td>{{ Carbon\Carbon::parse($quotation->invoice_date)->format('Y-m-d') }}</td>
-                                            <td>{{ $quotation->product_name }}</td>
-                                            <td class="text-right">${{ number_format($quotation->amount) }}</td>
-                                            <td class="text-right">${{ number_format($quotation->commision_value, 2) }}</td>
+    @if (! $error)
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        @if ($errors->any())
+                            <div class="alert alert-warning" role="alert">
+                                <button type="button" class="close pl-2" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <i class="mdi mdi-alert-outline pr-2"></i> 
+                                @foreach ($errors->all() as $error)
+                                    {{ $error }}<br>
+                                @endforeach
+                            </div>
+                        @endif
+                        <form method="POST" enctype="multipart/form-data" action="{{ route('payment_requests.store') }}" >
+                            @csrf
+                            <div class="table-responsive">
+                                <table class="table table-sm table-bordered mb-0">
+                                    <thead>
+                                        <tr class="bg-secondary text-white">
+                                            <th class="text-center">Detalle</th>
+                                            <th>Liquidación ID</th>
+                                            <th>Desde</th>
+                                            <th>Hasta</th>
+                                            <th>Fecha registro</th>
+                                            <th class="text-right">Valor</th>
                                         </tr>
+                                    </thead>
+                                    <tbody>
                                         @php
-                                            $i++;
+                                            $subtotal = 0;
                                         @endphp
-                                    @endforeach
-                                    <tr class="">
-                                        <th colspan="5" class="text-right">SUBTOTAL</th>
-                                        <th class="text-right bg-">$<span id="subtotal">0</span></th>
-                                    </tr>
-                                    <tr class="">
-                                        <th colspan="5" class="text-right">IVA</th>
-                                        <th class="text-right bg-">$<span id="iva">0</span></th>
-                                    </tr>
-                                    <tr class="">
-                                        <th colspan="5" class="text-right">TOTAL</th>
-                                        <th class="text-right bg-light">$<span id="total">0</span></th>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                                        @foreach ($commissions as $commission)
+                                            <tr>
+                                                <td class="text-center">
+                                                    <a href="javascript:void(0);" class="btn btn-sm btn-outline-secondary" title="Consultar detalle" data-toggle="modal" data-target="#cierreModal" data-id="{{ $commission['CierreId'] }}" data-url="{{ route('payment_requests.details', ['commission_id' => $commission['CierreId']]) }}"><i class="ri-eye-line"></i></a>
+                                                    <input type="hidden" name="cierre_id[]" value="{{ $commission['CierreId'] }}">
+                                                </td>
+                                                <td>{{ $commission['CierreId'] }}</td>
+                                                <td>{{ Carbon\Carbon::parse($commission['FechaDesde'])->format('Y-m-d') }}</td>
+                                                <td>{{ Carbon\Carbon::parse($commission['FechaHasta'])->format('Y-m-d') }}</td>
+                                                <td>{{ Carbon\Carbon::parse($commission['FechaRegistro'])->format('Y-m-d') }}</td>
+                                                <td class="text-right">${{ number_format($commission['DroneCommissionDistribution']['ValorComision'], 2) }}</td>
+                                            </tr>
+                                            @php
+                                                $subtotal += $commission['DroneCommissionDistribution']['ValorComision'];
+                                            @endphp
+                                        @endforeach
+                                        <tr class="">
+                                            <th colspan="5" class="text-right">SUBTOTAL</th>
+                                            <th class="text-right bg-">${{ number_format($subtotal, 2) }}</th>
+                                        </tr>
+                                        <tr class="">
+                                            <th colspan="5" class="text-right">IVA</th>
+                                            <th class="text-right bg-">${{ number_format($subtotal * $iva->value, 2) }}</th>
+                                        </tr>
+                                        <tr class="">
+                                            <th colspan="5" class="text-right">TOTAL</th>
+                                            <th class="text-right bg-light">${{ number_format($subtotal + ($subtotal * $iva->value), 2) }}</th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
 
-                        <div class="border rounded pt-3 px-3 pb-2 my-3 bg-light">
-                            <div class="row">
-                                <div class="col-xl-3 col-md-6">
-                                    <div class="form-group">
-                                        <label for="method_of_payment">Forma de pago *</label>
-                                        <select name="method_of_payment" id="method_of_payment" class="form-control{{ $errors->has('method_of_payment') ? ' is-invalid' : '' }}" data-validation="">
-                                            <option value="">- Seleccione un item -</option>
-                                            <option value="1" selected="">Transferencia directa</option>
-                                            <option value="2">Pago a tercero</option>
-                                        </select>
-                                        {!! $errors->first('method_of_payment', '<span class="form-text form-error">:message</span>') !!}
+                            <h5 class="my-4">Información para el pago</h5>
+                            <div class="border rounded pt-3 px-3 pb-2 bg-light">
+                                <div class="row">
+                                    <div class="col-xl-4 col-md-6">
+                                        <div class="form-group">
+                                            <div class="form-group">
+                                                <label for="bank_id">Banco *</label> 
+                                                <select name="bank_id" id="bank_id" class="custom-select{{ $errors->has('bank_id') ? ' is-invalid' : '' }}" data-validation="required">
+                                                    <option value="">- Seleccione un item -</option>
+                                                    @foreach ($banks as $id => $name)
+                                                        <option value="{{ $id }}" {{ (old('bank_id') ? (old('bank_id') == $id ? 'selected' : '') : (auth()->user()->drone->bank_id == $id ? 'selected' : '')) }}>{{ $name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                {!! $errors->first('bank_id', '<span class="form-text form-error">:message</span>') !!}
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-xl-3 col-md-6 d-none">
-                                    <div class="form-group">
-                                        <label for="bank">Banco *</label>
-                                        <input type="text" name="bank" id="bank" class="form-control input-mask{{ $errors->has('active') ? ' is-invalid' : '' }}" maxlength="50" placeholder="Máximo 50 caracteres" value="" data-validation="" data-sanitize="trim">
-                                        {!! $errors->first('bank', '<span class="form-text form-error">:message</span>') !!}
+                                    <div class="col-xl-4 col-md-6">
+                                        <div class="form-group">
+                                            <label for="bank_account_type">Tipo de cuenta *</label>
+                                            <select name="bank_account_type" id="bank_account_type" class="custom-select{{ $errors->has('bank_account_type') ? ' is-invalid' : '' }}" data-validation="required">
+                                                <option value="">- Seleccione un item -</option>
+                                                <option value="{{ App\Bank::AHORROS }}" {{ (old('bank_account_type') ? (old('bank_account_type') == App\Bank::AHORROS ? 'selected' : '') : (auth()->user()->drone->bank_account_type == App\Bank::AHORROS ? 'selected' : '')) }}>Ahorros</option>
+                                                <option value="{{ App\Bank::CORRIENTE }}" {{ (old('bank_account_type') ? old('bank_account_type') == App\Bank::CORRIENTE : (auth()->user()->drone->bank_account_type == App\Bank::CORRIENTE ? 'selected' : '')) }}>Corriente</option>
+                                            </select>
+                                            {!! $errors->first('bank_account_type', '<span class="form-text form-error">:message</span>') !!}
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-xl-3 col-md-6 d-none">
-                                    <div class="form-group">
-                                        <label for="account_type">Tipo de cuenta *</label>
-                                        <select name="account_type" id="account_type" class="form-control{{ $errors->has('account_type') ? ' is-invalid' : '' }}" data-validation="">
-                                            <option value="">- Seleccione un item -</option>
-                                            <option value="">Corriente</option>
-                                            <option value="">Ahorro</option>
-                                        </select>
-                                        {!! $errors->first('account_type', '<span class="form-text form-error">:message</span>') !!}
+                                    <div class="col-xl-4 col-md-6">
+                                        <div class="form-group">
+                                            <label for="bank_account_number">Número de cuenta *</label>
+                                            <input type="text" name="bank_account_number" id="bank_account_number" class="form-control{{ $errors->has('bank_account_number') ? ' is-invalid' : '' }}" value="{{ (old('bank_account_number') ? old('bank_account_number') : auth()->user()->drone->bank_account_number) }}" maxlength="20" placeholder="Máximo 20 caracteres" data-validation="required" data-sanitize="trim">
+                                            {!! $errors->first('bank_account_number', '<span class="form-text form-error">:message</span>') !!}
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-xl-3 col-md-6 d-none">
-                                    <div class="form-group">
-                                        <label for="account_number">N° de cuenta *</label>
-                                        <input type="text" name="account_number" id="account_number" class="form-control input-mask{{ $errors->has('active') ? ' is-invalid' : '' }}" maxlength="15" placeholder="Máximo 15 caracteres" value="" data-validation="" data-sanitize="trim">
-                                        {!! $errors->first('account_number', '<span class="form-text form-error">:message</span>') !!}
+                                    <div class="col-xl-4 col-md-6">
+                                        <div class="form-group">
+                                            <label for="beneficiary_identification">Cédula/Ruc *</label>
+                                            <input type="text" name="beneficiary_identification" id="beneficiary_identification" class="form-control{{ $errors->has('active') ? ' is-invalid' : '' }}" maxlength="13" placeholder="Máximo 13 caracteres" value="{{ (old('beneficiary_identification') ? old('beneficiary_identification') : auth()->user()->drone->identification_number) }}" data-validation="required number" data-sanitize="trim">
+                                            {!! $errors->first('beneficiary_identification', '<span class="form-text form-error">:message</span>') !!}
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-xl-5 col-md-6 d-none">
-                                    <div class="form-group">
-                                        <label for="name">Nombre del beneficiario *</label>
-                                        <input type="text" name="name" id="name" class="form-control input-mask{{ $errors->has('active') ? ' is-invalid' : '' }}" maxlength="50" placeholder="Máximo 50 caracteres" value="" data-validation="" data-sanitize="trim">
-                                        {!! $errors->first('name', '<span class="form-text form-error">:message</span>') !!}
+                                    <div class="col-xl-4 col-md-6">
+                                        <div class="form-group">
+                                            <label for="beneficiary_name">Nombre *</label>
+                                            <input type="text" name="beneficiary_name" id="beneficiary_name" class="form-control input-mask{{ $errors->has('active') ? ' is-invalid' : '' }}" maxlength="100" placeholder="Máximo 100 caracteres" value="{{ (old('beneficiary_name') ? old('beneficiary_name') : auth()->user()->drone->getFullName(true)) }}" data-validation="required" data-sanitize="trim">
+                                            {!! $errors->first('beneficiary_name', '<span class="form-text form-error">:message</span>') !!}
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="col-xl-3 col-md-6 d-none">
-                                    <div class="form-group">
-                                        <label for="identification_number">Cédula/Ruc *</label>
-                                        <input type="text" name="identification_number" id="identification_number" class="form-control input-mask{{ $errors->has('active') ? ' is-invalid' : '' }}" maxlength="11" placeholder="Máximo 11 caracteres" value="" data-validation="" data-sanitize="trim">
-                                        {!! $errors->first('identification_number', '<span class="form-text form-error">:message</span>') !!}
-                                    </div>
-                                </div>
-                                <div class="col-xl-4 col-md-6 d-none">
-                                    <div class="form-group">
-                                        <label for="email">Correo electrónico</label>
-                                        <input type="text" name="email" id="email" class="form-control input-mask{{ $errors->has('active') ? ' is-invalid' : '' }}" maxlength="50" placeholder="Máximo 50 caracteres" value="" data-validation="" data-sanitize="trim">
-                                        {!! $errors->first('email', '<span class="form-text form-error">:message</span>') !!}
+                                    <div class="col-xl-4 col-md-6">
+                                        <div class="form-group">
+                                            <label for="beneficiary_email">Correo electrónico *</label>
+                                            <input type="text" name="beneficiary_email" id="beneficiary_email" class="form-control input-mask{{ $errors->has('active') ? ' is-invalid' : '' }}" maxlength="150" placeholder="Máximo 150 caracteres" value="{{ (old('beneficiary_email') ? old('beneficiary_email') : auth()->user()->drone->email) }}" data-validation="required email" data-sanitize="trim">
+                                            {!! $errors->first('beneficiary_email', '<span class="form-text form-error">:message</span>') !!}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="border rounded p-3 my-3">
-                            <div class="row">
-                                <div class="col-12">
-                                    <p>Utiliza los siguientes datos descritos para elaborar correctamente tu factura y luego tómale una foto a la factura o escanéala para que posteriormente la subas.</p>
+                            <div class="border rounded p-3 my-3">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <p>Utiliza los siguientes datos para que elaborares correctamente tu factura.</p>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#invoiceModal">
+                                    Ver datos para elaborar la factura
+                                </button>
+                            </div>
+
+                            <div class="border rounded pt-3 px-3 pb-2 bg-light">
+                                <div class="row">
+                                    <div class="col-xl-3 col-md-6">
+                                        <div class="form-group">
+                                            <label for="invoice_number">Número de factura *</label>
+                                            <input type="text" name="invoice_number" id="invoice_number" class="form-control input-mask{{ $errors->has('active') ? ' is-invalid' : '' }}" maxlength="17" placeholder="15 dígitos" value="{{ old('invoice_number') }}" data-validation="required" data-sanitize="trim" data-inputmask="'mask': '999-999-999999999'">
+                                            {!! $errors->first('invoice_number', '<span class="form-text form-error">:message</span>') !!}
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-md-6">
+                                        <div class="form-group">
+                                            <label for="invoice_value">Valor total *</label>
+                                            <input type="text" name="invoice_value" id="invoice_value" class="form-control input-mask{{ $errors->has('active') ? ' is-invalid' : '' }}" maxlength="9" placeholder="Total en dólares" value="{{ number_format($subtotal + ($subtotal * $iva->value), 2) }}" data-validation="required" data-sanitize="trim" readonly>
+                                            {!! $errors->first('invoice_value', '<span class="form-text form-error">:message</span>') !!}
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-md-6">
+                                        <div class="form-group">
+                                            <label for="invoice_autorization_number">Número de autorización *</label>
+                                            <input type="text" name="invoice_autorization_number" id="invoice_autorization_number" class="form-control input-mask{{ $errors->has('active') ? ' is-invalid' : '' }}" maxlength="10" placeholder="10 dígitos" value="{{ old('invoice_autorization_number') }}" data-validation="required" data-sanitize="trim" data-inputmask="'mask': '9999999999'">
+                                            {!! $errors->first('invoice_autorization_number', '<span class="form-text form-error">:message</span>') !!}
+                                        </div>
+                                    </div>
+                                    <div class="col-xl-3 col-md-6">
+                                        <div class="form-group">
+                                            <label for="invoice_autorization_date">Fecha de autorización *</label>
+                                            <input type="date" name="invoice_autorization_date" id="invoice_autorization_date" class="form-control{{ $errors->has('invoice_autorization_date') ? ' is-invalid' : '' }}" value="{{ old('invoice_autorization_date') }}" placeholder="dd/mm/yyyy" data-validation="required">
+                                            {!! $errors->first('invoice_autorization_date', '<span class="form-text form-error">:message</span>') !!}
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <div class="form-group">
+                                            <label for="file">Foto de la factura * <small>(Formato: JPG, PNG, PDF - Máximo: 4Mb)</small></label>
+                                            <input type="file" class="form-control-file" name="file" id="file">
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#exampleModal">
-                                Ver datos para la factura
-                            </button>
-                        </div>
-
-                        <div class="border rounded pt-3 px-3 pb-2 bg-light">
-                            <div class="row">
-                                <div class="col-xl-3 col-md-6">
-                                    <div class="form-group">
-                                        <label for="invoice_number">Número de factura *</label>
-                                        <input type="text" name="invoice_number" id="invoice_number" class="form-control input-mask{{ $errors->has('active') ? ' is-invalid' : '' }}" maxlength="9" placeholder="Máximo 9 dígitos" value="" data-validation="required" data-sanitize="trim" data-inputmask="'mask': '999999999'">
-                                        {!! $errors->first('invoice_number', '<span class="form-text form-error">:message</span>') !!}
-                                    </div>
-                                </div>
-                                <div class="col-xl-3 col-md-6">
-                                    <div class="form-group">
-                                        <label for="value">Valor *</label>
-                                        <input type="text" name="value" id="value" class="form-control input-mask{{ $errors->has('active') ? ' is-invalid' : '' }}" maxlength="9" placeholder="Total en dólares" value="" data-validation="required" data-sanitize="trim">
-                                        {!! $errors->first('value', '<span class="form-text form-error">:message</span>') !!}
-                                    </div>
-                                </div>
-                                <div class="col-xl-3 col-md-6">
-                                    <div class="form-group">
-                                        <label for="expiry_date">Fecha de emisión *</label>
-                                        <input type="date" name="expiry_date" id="expiry_date" class="form-control{{ $errors->has('expiry_date') ? ' is-invalid' : '' }}" value="" placeholder="dd/mm/yyyy" data-validation="required">
-                                        {!! $errors->first('expiry_date', '<span class="form-text form-error">:message</span>') !!}
-                                    </div>
-                                </div>
-                                <div class="col-xl-3 col-md-6">
-                                    <div class="form-group">
-                                        <label for="names">Fecha de caducidad *</label>
-                                        <input type="date" name="issue_date" id="issue_date" class="form-control{{ $errors->has('issue_date') ? ' is-invalid' : '' }}" value="" placeholder="dd/mm/yyyy" data-validation="required">
-                                        {!! $errors->first('issue_date', '<span class="form-text form-error">:message</span>') !!}
-                                    </div>
-                                </div>
-                                <div class="col-lg-6">
-                                    <div class="form-group">
-                                        <label for="exampleFormControlFile1">Subir factura * <small>(Formato: JPG o PDF - Máximo: 4Mb)</small></label>
-                                        <input type="file" class="form-control-file" id="exampleFormControlFile1">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="btn btn-secondary waves-effect waves-light mt-3" type="submit">Aceptar</button>
-                    </form>
+                            <button class="btn btn-secondary waves-effect waves-light mt-3" type="submit">Aceptar</button>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Datos para la factura</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <table class="table table-bordered">
-                        <tr>
-                            <th width="15%" class="bg-light">Cliente:</th>
-                            <td colspan="3">CasaPlan MotorPlan S.A.</td>
-                        </tr>
-                        <tr>
-                            <th width="15%" class="bg-light">Dirección:</th>
-                            <td colspan="3">Sauces 8, Mz. 454 - F26, Solar 1 Av. Francisco de Orellana y Rodolfo Baquerizo Nazur.</td>
-                        </tr>
-                        <tr>
-                            <th width="15%" class="bg-light">RUC:</th>
-                            <td width="35%">0992151854001</td>
-                            <th width="15%" class="bg-light">Telf:</th>
-                            <td width="35%">(04) 2 233939</td>
-                        </tr>
-                    </table>
-                    <table class="table table-bordered mb-0">
-                        <thead>
-                            <tr class="bg-light">
-                                <th class="text-center">Cant.</th>
-                                <th>Descripción</th>
-                                <th class="text-right">V. Unit.</th>
-                                <th class="text-right">V. Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+        <!-- start modal -->
+        <div class="modal fade" id="invoiceModal" tabindex="-1" role="dialog" aria-labelledby="invoiceModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="invoiceModalLabel">Datos para la factura</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="table table-bordered">
                             <tr>
-                                <td class="text-center">1</td>
-                                <td>Pago de comisiones proyecto drones</td>
-                                <td class="text-right">$<span class="subtotal"></span></td>
-                                <td class="text-right">$<span class="subtotal"></span></td>
+                                <th width="15%" class="bg-light">Cliente:</th>
+                                <td colspan="3">CasaPlan MotorPlan S.A.</td>
                             </tr>
                             <tr>
-                                <td>&nbsp;</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <th width="15%" class="bg-light">Dirección:</th>
+                                <td colspan="3">Sauces 8, Mz. 454 - F26, Solar 1 Av. Francisco de Orellana y Rodolfo Baquerizo Nazur.</td>
                             </tr>
                             <tr>
-                                <td>&nbsp;</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
+                                <th width="15%" class="bg-light">RUC:</th>
+                                <td width="35%">0992151854001</td>
+                                <th width="15%" class="bg-light">Telf:</th>
+                                <td width="35%">(04) 2 233939</td>
                             </tr>
-                            <tr>
-                                <td colspan="2"></td>
-                                <th class="text-right bg-light">Subtotal</th>
-                                <td class="text-right">$<span class="subtotal"></span></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2"></td>
-                                <th class="text-right bg-light">IVA</th>
-                                <td class="text-right">$<span class="iva"></span></td>
-                            </tr>
-                            <tr>
-                                <td colspan="2"></td>
-                                <th class="text-right bg-light">TOTAL</th>
-                                <td class="text-right">$<span class="total"></span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                        </table>
+                        <table class="table table-bordered mb-0">
+                            <thead>
+                                <tr class="bg-light">
+                                    <th class="text-center">Cant.</th>
+                                    <th>Descripción</th>
+                                    <th class="text-right">V. Unit.</th>
+                                    <th class="text-right">V. Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center">1</td>
+                                    <td>Pago de comisiones Proyecto Drones</td>
+                                    <td class="text-right">${{ number_format($subtotal, 2) }}</td>
+                                    <td class="text-right">${{ number_format($subtotal, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td>&nbsp;</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"></td>
+                                    <th class="text-right bg-light">Subtotal</th>
+                                    <td class="text-right">${{ number_format($subtotal, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"></td>
+                                    <th class="text-right bg-light">IVA</th>
+                                    <td class="text-right">${{ number_format($subtotal * $iva->value, 2) }}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2"></td>
+                                    <th class="text-right bg-light">TOTAL</th>
+                                    <td class="text-right">${{ number_format($subtotal + ($subtotal * $iva->value), 2) }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+        <!-- end modal -->
+
+        <div class="modal fade" id="cierreModal" tabindex="-1" role="dialog" aria-labelledby="cierreModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="cierreModalLabel">Liquidación #</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        hola ss
+                    </div>
+                </div>
+            </div>
+        </div>
+    @else
+        <div class="row">
+            <div class="col-md-6">
+                <div class="alert alert-warning" role="alert">
+                    <button type="button" class="close pl-2" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <i class="mdi mdi-alert-outline pr-2"></i> 
+                    {{ $error }}
+                </div>
+            </div>
+        </div>
+    @endif
 @endsection
 
 @push('js')
@@ -292,50 +304,33 @@
     // inputmask init
     $(document).ready(function(){$(".input-mask").inputmask()});
 
-    $('#selectAll').click(function(e) {
-        var table = $(e.target).closest('table');
-        $('td input:checkbox', table).prop('checked', this.checked);
-    });
-    $('.custom-control-input').change(function() {
-        var subtotal = 0;
-        $('.table input:checked').each(function() {
-            if ($(this).attr('data-commission')) {
-                subtotal = subtotal + Number($(this).attr('data-commission'));
+
+
+    $('#cierreModal').on('show.bs.modal', function (event) {
+        var button = $(event.relatedTarget);
+        var id = button.data('id');
+        var url = button.data('url');
+        var modal = $(this);
+        modal.find('.modal-title').html('Liquidación #' + id);
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('input[name="_token"]').attr('content')
             }
         });
-        $('#subtotal').html(parseFloat(subtotal).toFixed(2));
-        $('#iva').html(parseFloat(subtotal*0.12).toFixed(2));
-        $('#total').html(parseFloat(subtotal+subtotal*0.12).toFixed(2));
-
-
-        $('.subtotal').html(parseFloat(subtotal).toFixed(2));
-        $('.iva').html(parseFloat(subtotal*0.12).toFixed(2));
-        $('.total').html(parseFloat(subtotal+subtotal*0.12).toFixed(2));
-    });
-    $('#method_of_payment').change(function() {
-        if ($(this).val()==2) {
-            $('#bank').parent().parent().removeClass('d-none');
-            $('#account_number').parent().parent().removeClass('d-none');
-            $('#account_type').parent().parent().removeClass('d-none');
-            $('#name').parent().parent().removeClass('d-none');
-            $('#identification_number').parent().parent().removeClass('d-none');
-            $('#email').parent().parent().removeClass('d-none');
-        } else {
-            $('#bank').parent().parent().addClass('d-none');
-            $('#account_number').parent().parent().addClass('d-none');
-            $('#account_type').parent().parent().addClass('d-none');
-            $('#name').parent().parent().addClass('d-none');
-            $('#identification_number').parent().parent().addClass('d-none');
-            $('#email').parent().parent().addClass('d-none');
-        }
-    });
+        var request = $.ajax({
+            method: 'get',
+            xhrFields: {
+                withCredentials: true
+            },
+            // dataType: 'json',
+            url: url
+        });
+        request.done(function(data) {
+            modal.find('.modal-body').html(data);
+        });
+        request.fail(function(xhr, status, error) {
+            console.log('Request failed: ' + error);
+        });
+    })
     </script>
-@endpush
-
-@push('css')
-    <style type="text/css">
-        .custom-control {
-            padding-left: 2rem;
-        }
-    </style>
 @endpush

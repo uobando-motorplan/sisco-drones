@@ -127,6 +127,7 @@ class QuotationController extends Controller
         // Actualizo el prospecto
         $customer->locked = true;
         $customer->seller_id = $seller->id;
+        $customer->assignator_id = User::SISTEMA;
         $customer->update($request->all());
 
         // Creo una observación para saber a qué vendedor fue asignado al prospecto
@@ -193,9 +194,18 @@ class QuotationController extends Controller
         ]);
 
         // Envía una notificación al VENDEDOR para indicarle que tiene una nueva oportunidad comercial.
-        $url = env('SISCO_URL').'api/notifications/new_quotation';
-        $response = Http::get($url, [
-            'api_key' => env('DRONES_KEY'),
+        $url = env('SISCO_URL').'api/notifications/new-quotation';
+        Http::withHeaders([
+            'Authorization' => env('DRONES_KEY'),
+        ])->get($url, [
+            'quotation_id' => $quotation->id
+        ]);
+
+        // Envía una notificación al PROSPECTO
+        $url = env('SISCO_URL').'api/notifications/your-ideal-plan';
+        Http::withHeaders([
+            'Authorization' => env('DRONES_KEY'),
+        ])->get($url, [
             'quotation_id' => $quotation->id
         ]);
 

@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Bank;
-use App\Role;
 use App\User;
 use App\Drone;
-use App\Location;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\DroneSuspensionReason;
@@ -272,9 +270,10 @@ class UserController extends Controller
             auth()->user()->drone->save();
 
             // Envía una notificación al ASISTENTE DE TALENTO HUMANO para que evalue el MARCO LEGAL
-            $url = env('SISCO_URL').'api/notifications/evaluate_legal_framework';
-            $response = Http::get($url, [
-                'api_key' => env('DRONES_KEY'),
+            $url = env('SISCO_URL').'api/notifications/evaluate-legal-framework';
+            $response = Http::withHeaders([
+                'Authorization' => env('DRONES_KEY'),
+            ])->get($url, [
                 'drone_id' => auth()->user()->drone->id
             ]);
         }
@@ -326,9 +325,10 @@ class UserController extends Controller
             auth()->user()->drone->save();
 
             // Envía una notificación al ASISTENTE DE TALENTO HUMANO para que evalue el MARCO LEGAL
-            $url = env('SISCO_URL').'api/notifications/evaluate_legal_framework';
-            $response = Http::get($url, [
-                'api_key' => env('DRONES_KEY'),
+            $url = env('SISCO_URL').'api/notifications/evaluate-legal-framework';
+            $response = Http::withHeaders([
+                'Authorization' => env('DRONES_KEY'),
+            ])->get($url, [
                 'drone_id' => auth()->user()->drone->id
             ]);
         }
@@ -380,9 +380,10 @@ class UserController extends Controller
             auth()->user()->drone->save();
 
             // Envía una notificación al ASISTENTE DE TALENTO HUMANO para que evalue el MARCO LEGAL
-            $url = env('SISCO_URL').'api/notifications/evaluate_legal_framework';
-            $response = Http::get($url, [
-                'api_key' => env('DRONES_KEY'),
+            $url = env('SISCO_URL').'api/notifications/evaluate-legal-framework';
+            $response = Http::withHeaders([
+                'Authorization' => env('DRONES_KEY'),
+            ])->get($url, [
                 'drone_id' => auth()->user()->drone->id
             ]);
         }
@@ -432,9 +433,10 @@ class UserController extends Controller
         auth()->user()->notify(new AccountDeactivatedNotification());
 
         // Envía una notificación al ASISTENTE DE TALENTO HUMANO para indicarle que un dron se ha desactivado
-        $url = env('SISCO_URL').'api/notifications/deactivate_account';
-        $response = Http::get($url, [
-            'api_key' => env('DRONES_KEY'),
+        $url = env('SISCO_URL').'api/notifications/deactivate-account';
+        $response = Http::withHeaders([
+            'Authorization' => env('DRONES_KEY'),
+        ])->get($url, [
             'drone_id' => auth()->user()->drone->id
         ]);
 

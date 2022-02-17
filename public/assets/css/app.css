@@ -4490,6 +4490,22 @@ div.dt-button-info h2 {
     background-image: none;
 }
 
+.form-control::placeholder {
+    /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: #a7acb1;
+    opacity: 1;
+}
+
+.form-control:-ms-input-placeholder {
+    /* Internet Explorer 10-11 */
+    color: #a7acb1;
+}
+
+.form-control::-ms-input-placeholder {
+    /* Microsoft Edge */
+    color: #a7acb1;
+}
+
 a {
     color: #b20000
 }
